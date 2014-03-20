@@ -1,5 +1,9 @@
 package pt.up.fe.backup;
 
-public class FileManager {
+import java.util.ArrayList;
 
+public class FileManager {
+	ArrayList<BackupFile> files;
+	
+	
 }
