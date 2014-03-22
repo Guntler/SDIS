@@ -1,6 +1,12 @@
 package pt.up.fe.backup.tasks;
 
-public class Stored implements Task {
+import pt.up.fe.backup.FileManager;
+
+public class Stored extends Task {
+
+	public Stored(FileManager fManager) {
+		super(fManager);
+	}
 
 	@Override
 	public void run() {

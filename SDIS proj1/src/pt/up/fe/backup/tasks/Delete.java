@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class Restore extends Task {
+public class Delete extends Task {
 
-	public Restore(FileManager fManager) {
+	public Delete(FileManager fManager) {
 		super(fManager);
 	}
 
@@ -13,5 +13,4 @@ public class Restore extends Task {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

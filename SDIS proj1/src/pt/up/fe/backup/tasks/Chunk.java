@@ -1,6 +1,12 @@
 package pt.up.fe.backup.tasks;
 
-public class Chunk implements Task {
+import pt.up.fe.backup.FileManager;
+
+public class Chunk extends Task {
+
+	public Chunk(FileManager fManager) {
+		super(fManager);
+	}
 
 	@Override
 	public void run() {
