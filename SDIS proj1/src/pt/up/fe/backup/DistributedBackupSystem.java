@@ -19,7 +19,10 @@ public class DistributedBackupSystem {
 	}
 	
 	public void start() {
-		listener = new PacketListener();
+		tManager = new TaskManager(null);
+		fManager = new FileManager(tManager);
+		tManager.setfManager(fManager);
+		listener = new PacketListener(tManager);
 		listener.run();
 	}
 }
