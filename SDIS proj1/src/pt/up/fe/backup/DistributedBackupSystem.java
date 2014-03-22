@@ -29,7 +29,10 @@ public class DistributedBackupSystem {
 	}
 	
 	public void start() throws IOException {
-		listener = new PacketListener();
+		tManager = new TaskManager(null);
+		fManager = new FileManager(tManager);
+		tManager.setfManager(fManager);
+		listener = new PacketListener(tManager);
 		listener.run();
 		
 		final int mCastPort = Integer.parseInt(mcastArgs[1]);
