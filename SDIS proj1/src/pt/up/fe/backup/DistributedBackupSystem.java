@@ -5,12 +5,21 @@ public class DistributedBackupSystem {
 	private TaskManager tManager;
 	private PacketListener listener;
 	
-	public static void main() {
+	/**
+	 * @param args	<IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR> 
+	 */
+	public static void main(String[] args) {
+		if (args.length != 6) {
+			System.out.println("Usage: java DistributedBackupSystem <IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>");
+			return;
+		}
+		
 		DistributedBackupSystem system = new DistributedBackupSystem();
 		system.start();
 	}
 	
 	public void start() {
-		
+		listener = new PacketListener();
+		listener.run();
 	}
 }
