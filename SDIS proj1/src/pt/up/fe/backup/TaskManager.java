@@ -8,7 +8,7 @@ public class TaskManager {
 
 	private ArrayList<Task> tasks;
 	private FileManager fManager;
-
+	
 	public TaskManager(FileManager fManager) {
 		tasks = new ArrayList<Task>();
 		this.fManager = fManager;
