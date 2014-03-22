@@ -60,8 +60,6 @@ public class FileManager {
 		byte[] fileHash = computeFileHash(filename);
 		
 		if(fileHash != null) {
-			newFile = new BackupFile(fileHash, filename, replicationDegree);
-			
 			try {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
@@ -70,9 +68,10 @@ public class FileManager {
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead);
-					
-					
+					chunkCount++;
 				}
+				
+				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 
 				reader.close();
 

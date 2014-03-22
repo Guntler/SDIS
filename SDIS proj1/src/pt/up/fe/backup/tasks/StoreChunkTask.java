@@ -1,12 +1,14 @@
 package pt.up.fe.backup.tasks;
 
+import pt.up.fe.backup.BackupChunk;
 import pt.up.fe.backup.FileManager;
 
-public class ReceiveChunkTask extends Task {
+public class StoreChunkTask extends Task {
 	BackupChunk chunk;
 
-	public ReceiveChunkTask(FileManager fManager) {
+	public StoreChunkTask(FileManager fManager, BackupChunk chunk) {
 		super(fManager);
+		this.chunk = chunk;
 	}
 
 	@Override

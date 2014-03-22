@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class Delete extends Task {
+public class DeleteChunkTask extends Task {
 
-	public Delete(FileManager fManager) {
+	public DeleteChunkTask(FileManager fManager) {
 		super(fManager);
 	}
 

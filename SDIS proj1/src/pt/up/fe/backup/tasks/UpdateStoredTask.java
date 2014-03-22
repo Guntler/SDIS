@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class Stored extends Task {
+public class UpdateStoredTask extends Task {
 
-	public Stored(FileManager fManager) {
+	public UpdateStoredTask(FileManager fManager) {
 		super(fManager);
 	}
 

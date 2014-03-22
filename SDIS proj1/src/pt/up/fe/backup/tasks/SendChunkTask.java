@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class GetChunk extends Task {
+public class SendChunkTask extends Task {
 
-	public GetChunk(FileManager fManager) {
+	public SendChunkTask(FileManager fManager) {
 		super(fManager);
 	}
 
