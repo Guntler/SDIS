@@ -1,5 +1,5 @@
 package pt.up.fe.backup.tasks;
 
-public class Task {
-
+public interface Task {
+	public abstract void run();
 }
