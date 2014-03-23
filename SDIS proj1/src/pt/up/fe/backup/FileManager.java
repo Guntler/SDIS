@@ -69,6 +69,8 @@ public class FileManager {
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead);
 					chunkCount++;
+					
+					tManager.executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);

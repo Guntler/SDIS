@@ -6,8 +6,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-import pt.up.fe.backup.tasks.Chunk;
-
 public class Packet {
 	protected ArrayList<String> msgArgs;
 	protected String packetType;
@@ -22,7 +20,7 @@ public class Packet {
 	 * Constructor for PutChunk
 	 * PUTCHUNK <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF> <CRLF> <Body>
 	 */
-	public Packet(String version, int replicationDeg, Chunk chunk ) {
+	public Packet(String version, int replicationDeg, BackupChunk chunk ) {
 		packetType = "PUTCHUNK";
 	}
 

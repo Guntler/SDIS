@@ -3,6 +3,7 @@ package pt.up.fe.backup;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.ReceiveChunkTask;
@@ -25,17 +26,16 @@ public class TaskManager {
 		this.fManager = fManager;
 	}
 	
-	public void executeTask(TaskTypes type, BackupChunk chunk) {
+	public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
 		switch(type) {
 		case BACKUPCHUNK:
-			executor.execute(new BackUpChunkTask(fManager, chunk));
-			break;
+			return executor.submit(new BackUpChunkTask(fManager, chunk));
 		case STORECHUNK:
-			executor.execute(new StoreChunkTask(fManager, chunk));
-			break;
-		/*case RECEIVECHUNK:
-			executor.execute(new ReceiveChunkTask(fManager, chunk));
-			break;*/
+			return executor.submit(new StoreChunkTask(fManager, chunk));
+		case RECEIVECHUNK:
+			return executor.submit(new ReceiveChunkTask(fManager, chunk));
+		default:
+			return null;
 		}
 		
 	}
