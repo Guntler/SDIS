@@ -140,6 +140,10 @@ public class Packet {
 	    return DatatypeConverter.printHexBinary(array);
 	}
 	
+	public static byte[] hexToByte(String s) {
+	    return DatatypeConverter.parseHexBinary(s);
+	}
+	
 	public void parseMessage(String msg) {
 		if(msg.contains("PUTCHUNK")) {
 			String subMsg = msg.substring("PUTCHUNK".length());
