@@ -1,6 +1,7 @@
 package pt.up.fe.backup;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -156,7 +157,7 @@ public class Packet {
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			this.version = version;
-			this.fileID = fileID.getBytes();
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.replicationDeg = Integer.parseInt(repDeg);
 			this.data = body.getBytes();
@@ -178,9 +179,9 @@ public class Packet {
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			this.version = version;
-			this.fileID = fileID.getBytes();
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 			this.chunkNo = Integer.parseInt(chunkNo);
-			this.data = body.getBytes();
+			try {this.data = body.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 		}
 		else if(msg.contains("GETCHUNK")) {
 			String subMsg = msg.substring("GETCHUNK".length());
@@ -193,7 +194,7 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String chunkNo = subMsg.substring(0,nextSpace);
 			this.version = version;
-			this.fileID = fileID.getBytes();
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("REMOVED")) {
@@ -207,7 +208,7 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String chunkNo = subMsg.substring(0,nextSpace);
 			this.version = version;
-			this.fileID = fileID.getBytes();
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("STORED")) {
@@ -221,14 +222,14 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String chunkNo = subMsg.substring(0,nextSpace);
 			this.version = version;
-			this.fileID = fileID.getBytes();
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("DELETE")) {
 			String subMsg = msg.substring("DELETE".length());
 			int nextSpace = subMsg.indexOf(' ');
 			String fileID = subMsg.substring(0,nextSpace);
-			this.fileID = fileID.getBytes(); 
+			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 		}
 	}
 }
