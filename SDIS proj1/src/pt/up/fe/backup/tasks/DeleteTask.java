@@ -2,10 +2,12 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class DeleteChunkTask extends Task {
+public class DeleteTask extends Task {
+	byte[] fileID;
 
-	public DeleteChunkTask(FileManager fManager) {
+	public DeleteTask(FileManager fManager, byte[] fileID) {
 		super(fManager);
+		this.fileID = fileID;
 	}
 
 	@Override
