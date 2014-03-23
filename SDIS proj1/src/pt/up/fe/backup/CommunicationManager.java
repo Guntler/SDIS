@@ -12,7 +12,9 @@ public class CommunicationManager implements Runnable {
 	protected MulticastSocket socketMC = null;
 	protected MulticastSocket socketMDB = null;
 	protected MulticastSocket socketMDR = null;
-	
+	protected SocketHandler handlerMC = null;
+	protected SocketHandler handlerMDB = null;
+	protected SocketHandler handlerMDR = null;
 	boolean done;
 	
 	private DistributedBackupSystem dbs;
@@ -40,7 +42,14 @@ public class CommunicationManager implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		handlerMC = new SocketHandler(socketMC);
+		handlerMDB = new SocketHandler(socketMDB);
+		handlerMDR = new SocketHandler(socketMDR);
+		Thread threadMC = new Thread(handlerMC);
+		Thread threadMDB = new Thread(handlerMDB);
+		Thread threadMDR = new Thread(handlerMDR);
+		threadMC.run();threadMDB.run();threadMDR.run();
+		
 		while(!done) {
 			
 		}
