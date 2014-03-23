@@ -1,8 +1,11 @@
 package pt.up.fe.backup;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -20,6 +23,18 @@ public class FileManager {
 		files = new HashMap<byte[],BackupFile>();
 		backedUpChunks = new ArrayList<BackupChunk>();
 		this.dbs = dbs;
+		
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader("/path/to/file.txt"));
+			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+			    String[] parts = line.
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public byte[] computeFileHash(String filename) {
