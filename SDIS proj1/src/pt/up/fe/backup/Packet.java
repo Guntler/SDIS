@@ -40,6 +40,22 @@ public class Packet {
 	public Packet(int filedId) {
 		packetType = "DELETE";
 	}
+	
+	/**
+	 * Constructor for Stored
+	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
+	 */
+	public Packet(String version, int filedId, int chunkNo) {
+		packetType = "STORED";
+	}
+	
+	/**
+	 * Constructor for Chunk
+	 * CHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF> <Body>
+	 */
+	public Packet(String version, BackupChunk chunk) {
+		packetType = "CHUNK";
+	}
 
 	public void sendPacket(DatagramSocket socket, String mcastAddr, String mcastPort) throws IOException {
 		byte[] buf = new byte[256];
