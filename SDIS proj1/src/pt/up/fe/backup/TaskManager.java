@@ -11,16 +11,12 @@ import pt.up.fe.backup.tasks.ReceiveChunkTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
-<<<<<<< HEAD
 import pt.up.fe.backup.tasks.Task;
 import pt.up.fe.backup.tasks.UpdateStoredTask;
-=======
->>>>>>> 99a5f5f9ff5e4df8835b00830935071dc0ee978c
 
 public class TaskManager {
 	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETE, RESTORECHUNK};
 	
-	//private ArrayList<Thread> tasks;
 	private FileManager fManager;
 	ExecutorService executor = null;
 	
@@ -44,7 +40,6 @@ public class TaskManager {
 		default:
 			return null;
 		}
-<<<<<<< HEAD
 	}
 	
 	public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
@@ -62,7 +57,5 @@ public class TaskManager {
 		default:
 			return null;
 		}
-=======
->>>>>>> 99a5f5f9ff5e4df8835b00830935071dc0ee978c
 	}
 }
