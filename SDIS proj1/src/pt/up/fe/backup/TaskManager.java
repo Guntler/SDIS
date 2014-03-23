@@ -11,7 +11,6 @@ import pt.up.fe.backup.tasks.ReceiveChunkTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
-import pt.up.fe.backup.tasks.Task;
 import pt.up.fe.backup.tasks.UpdateStoredTask;
 
 public class TaskManager {
@@ -57,5 +56,27 @@ public class TaskManager {
 		default:
 			return null;
 		}
+	}
+	
+	public Future<?> executeTask(Packet packet) {
+		if(packet.packetType.equals("PUTCHUNK")) {
+			return executor.submit(new StoreChunkTask(fManager, packet.getChunk()));
+		}
+		else if (packet.packetType.equals("GETCHUNK")) {
+			return executor.submit(new SendChunkTask(fManager, packet.getFileID(), packet.getChunkNo()));
+		}
+		else if (packet.packetType.equals("DELETE")) {
+			return executor.submit(new DeleteTask(fManager, packet.getFileID()));
+		}
+		else if (packet.packetType.equals("REMOVED")) {
+			return executor.submit(new HandleRemoveTask(fManager, packet.getFileID(), packet.getChunkNo()));
+		}
+		else if (packet.packetType.equals("STORED")) {
+			return executor.submit(new UpdateStoredTask(fManager, packet.getFileID(), packet.getChunkNo()));
+		}
+		else if (packet.packetType.equals("CHUNK")) {
+			return executor.submit(new ReceiveChunkTask(fManager, packet.getChunk()));
+		}
+		return null;
 	}
 }
