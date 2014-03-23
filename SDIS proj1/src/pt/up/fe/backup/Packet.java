@@ -13,7 +13,7 @@ public class Packet {
 	protected int chunkNo;
 	protected int replicationDeg;
 	protected String version;
-	protected BackupChunk chunk;
+	protected byte[] data;
 	
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
@@ -62,14 +62,15 @@ public class Packet {
 		packetType = "CHUNK";
 	}
 	
-	public BackupChunk getChunk() {
-		return chunk;
+	public byte[] getData() {
+		return data;
 	}
 
-	public void setChunk(BackupChunk chunk) {
-		this.chunk = chunk;
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
+	
 	public String getPacketType() {
 		return packetType;
 	}
