@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class DistributedBackupSystem {
 	private FileManager fManager;
 	private TaskManager tManager;
-	private CommunicationManager listener;
+	private CommunicationManager cManager;
 	
 	protected static ArrayList<String> mcastArgs;
 	
@@ -30,7 +30,20 @@ public class DistributedBackupSystem {
 		tManager = new TaskManager(null);
 		fManager = new FileManager(tManager);
 		tManager.setfManager(fManager);
-		listener = new CommunicationManager(tManager,mcastArgs);
-		listener.run();
+		cManager = new CommunicationManager(tManager,mcastArgs);
+		cManager.run();
+	}
+	
+	public FileManager getFManager() {
+		return fManager;
+	}
+	
+	public TaskManager getTManager() {
+		return tManager;
+	}
+	
+	public CommunicationManager getCManager() {
+		return cManager;
+		
 	}
 }
