@@ -15,7 +15,8 @@ public class CommunicationManager implements Runnable {
 	protected SocketHandler handlerMC = null;
 	protected SocketHandler handlerMDB = null;
 	protected SocketHandler handlerMDR = null;
-	boolean done;
+	private boolean done;
+	private ArrayList<Packet> receivedQueue;
 	
 	private DistributedBackupSystem dbs;
 
@@ -38,20 +39,24 @@ public class CommunicationManager implements Runnable {
 		socketMDR.joinGroup(groupMDR);
 		
 		done = false;
+		receivedQueue = new ArrayList<Packet>();
 	}
 
 	@Override
 	public void run() {
-		handlerMC = new SocketHandler(socketMC);
-		handlerMDB = new SocketHandler(socketMDB);
-		handlerMDR = new SocketHandler(socketMDR);
+		handlerMC = new SocketHandler(socketMC, this);
+		handlerMDB = new SocketHandler(socketMDB, this);
+		handlerMDR = new SocketHandler(socketMDR, this);
 		Thread threadMC = new Thread(handlerMC);
 		Thread threadMDB = new Thread(handlerMDB);
 		Thread threadMDR = new Thread(handlerMDR);
 		threadMC.run();threadMDB.run();threadMDR.run();
 		
 		while(!done) {
-			
+			if(receivedQueue.size() != 0) {
+				dbs.getTManager().executeTask(receivedQueue.get(0));
+				receivedQueue.remove(0);
+			}
 		}
 	};
 	
@@ -65,5 +70,9 @@ public class CommunicationManager implements Runnable {
 		else if(channel == Channels.MDR) {
 			p.sendPacket(socketMDR);
 		}
+	}
+	
+	public void addPacketToReceived(Packet p) {
+		this.receivedQueue.add(p);
 	}
 }
