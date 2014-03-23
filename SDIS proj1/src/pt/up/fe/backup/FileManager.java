@@ -25,11 +25,36 @@ public class FileManager {
 		
 		BufferedReader reader;
 		try {
-			reader = new BufferedReader(new FileReader("/path/to/file.txt"));
+			reader = new BufferedReader(new FileReader("log.txt"));
 			
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 			    String[] parts = line.split(" ");
+			    
+			    if(parts.length >= 2) {
+			    	if(parts[0].equals("allocatedmemory:")) {
+			    		maxSize = Integer.parseInt(parts[1]);
+			    	}
+			    	else if (parts[0].equals("usedmemory:")) {
+			    		currSize = Integer.parseInt(parts[1]);
+			    	}
+			    	else if (parts[0].equals("file:") && parts.length == 5) {
+			    		byte[] hash = Packet.hexToByte(parts[1]);
+			    		int repDegree = Integer.parseInt(parts[3]);
+			    		int numChunks = Integer.parseInt(parts[4]);
+			    		
+			    		
+			    		files.put(hash, new BackupFile(hash, parts[2], repDegree, numChunks));
+			    	}
+			    	else if (parts[0].equals("chunk:") && parts.length == 4) {
+			    		byte[] hash = Packet.hexToByte(parts[1]);
+			    		int chunkNo = Integer.parseInt(parts[2]);
+			    		int repDegree = Integer.parseInt(parts[3]);
+			    		
+			    		backedUpChunks.add(new BackupChunk(hash, chunkNo, null, null, repDegree));
+			    	}
+			    	
+			    }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
