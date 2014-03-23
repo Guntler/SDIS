@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 
-public class SocketHandler implements Runnable {
+public class SocketListener implements Runnable {
 	protected MulticastSocket socket = null;
 	protected boolean finished = false;
 	protected CommunicationManager manager;
 	
-	public SocketHandler(MulticastSocket socket, CommunicationManager m) {
+	public SocketListener(MulticastSocket socket, CommunicationManager m) {
 		this.socket = socket;
 		this.manager = m;
 	}

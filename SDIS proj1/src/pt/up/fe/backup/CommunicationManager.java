@@ -12,9 +12,9 @@ public class CommunicationManager implements Runnable {
 	protected MulticastSocket socketMC = null;
 	protected MulticastSocket socketMDB = null;
 	protected MulticastSocket socketMDR = null;
-	protected SocketHandler handlerMC = null;
-	protected SocketHandler handlerMDB = null;
-	protected SocketHandler handlerMDR = null;
+	protected SocketListener handlerMC = null;
+	protected SocketListener handlerMDB = null;
+	protected SocketListener handlerMDR = null;
 	private boolean done;
 	private ArrayList<Packet> receivedQueue;
 	
@@ -44,9 +44,9 @@ public class CommunicationManager implements Runnable {
 
 	@Override
 	public void run() {
-		handlerMC = new SocketHandler(socketMC, this);
-		handlerMDB = new SocketHandler(socketMDB, this);
-		handlerMDR = new SocketHandler(socketMDR, this);
+		handlerMC = new SocketListener(socketMC, this);
+		handlerMDB = new SocketListener(socketMDB, this);
+		handlerMDR = new SocketListener(socketMDR, this);
 		Thread threadMC = new Thread(handlerMC);
 		Thread threadMDB = new Thread(handlerMDB);
 		Thread threadMDR = new Thread(handlerMDR);
