@@ -13,10 +13,12 @@ public class CommunicationManager implements Runnable {
 	protected MulticastSocket socketMDR = null;
 	
 	TaskManager tManager;
+	DistributedBackupSystem dbs;
 
-	public CommunicationManager(TaskManager tManager,ArrayList<String> mcastArgs) throws IOException {
+	public CommunicationManager(TaskManager tManager,ArrayList<String> mcastArgs, DistributedBackupSystem dbs) throws IOException {
 		this.tManager = tManager;
 		this.mcastArgs = mcastArgs;
+		this.dbs = dbs;
 		
 		final int mCastPort = Integer.parseInt(this.mcastArgs.get(1));
 		final int mBackupPort = Integer.parseInt(this.mcastArgs.get(3));

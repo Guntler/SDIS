@@ -18,11 +18,13 @@ public class TaskManager {
 	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETE, RESTORECHUNK};
 	
 	private FileManager fManager;
+	private CommunicationManager cManager;
 	ExecutorService executor = null;
 	
-	public TaskManager(FileManager fManager) {
+	public TaskManager(FileManager fManager, CommunicationManager cm) {
 		executor = Executors.newFixedThreadPool(5);
 		this.fManager = fManager;
+		setcManager(cm);
 	}
 
 	public void setfManager(FileManager fManager) {
@@ -57,5 +59,13 @@ public class TaskManager {
 		default:
 			return null;
 		}
+	}
+
+	public CommunicationManager getcManager() {
+		return cManager;
+	}
+
+	public void setcManager(CommunicationManager cManager) {
+		this.cManager = cManager;
 	}
 }
