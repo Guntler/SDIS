@@ -3,6 +3,7 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.nio.charset.StandardCharsets;
 
 public class SocketListener implements Runnable {
 	protected MulticastSocket socket = null;
@@ -21,6 +22,10 @@ public class SocketListener implements Runnable {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);
+				byte[] data = packet.getData();
+				
+				String packetString = new String(data, StandardCharsets.ISO_8859_1);
+				manager.addPacketToReceived(new Packet(packetString));
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}

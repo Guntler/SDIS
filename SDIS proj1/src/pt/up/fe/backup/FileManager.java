@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -30,7 +29,7 @@ public class FileManager {
 			
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-			    String[] parts = line.
+			    String[] parts = line.split(" ");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
