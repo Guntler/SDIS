@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class Restore extends Task {
+public class RestoreChunkTask extends Task {
 
-	public Restore(FileManager fManager) {
+	public RestoreChunkTask(FileManager fManager) {
 		super(fManager);
 	}
 

@@ -7,10 +7,12 @@ public class BackupFile {
 	private byte[] fileID;
 	private String filename;
 	private int replicationDegree;
+	private int chunkNum;
 	
-	public BackupFile(byte[] hash, String filename, int replicationDegree) {
+	public BackupFile(byte[] hash, String filename, int replicationDegree, int chunkNum) {
 		this.fileID = hash;
 		this.filename = filename;
 		this.replicationDegree = replicationDegree;
+		this.chunkNum = chunkNum;
 	}
 }

@@ -2,9 +2,9 @@ package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.FileManager;
 
-public class Stored extends Task {
+public class DeleteChunkTask extends Task {
 
-	public Stored(FileManager fManager) {
+	public DeleteChunkTask(FileManager fManager) {
 		super(fManager);
 	}
 
@@ -13,5 +13,4 @@ public class Stored extends Task {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

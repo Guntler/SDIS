@@ -1,16 +1,22 @@
 package pt.up.fe.backup;
 
-import java.util.ArrayList;
-import pt.up.fe.backup.tasks.Task;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import pt.up.fe.backup.tasks.BackUpChunkTask;
+import pt.up.fe.backup.tasks.ReceiveChunkTask;
+import pt.up.fe.backup.tasks.StoreChunkTask;
 
 public class TaskManager {
-	public enum TaskTypes {STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATE_STORED, HANDLE_REMOVE, DELETE, RESTORE};
-
-	private ArrayList<Task> tasks;
+	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETECHUNK, RESTORECHUNK};
+	
+	//private ArrayList<Thread> tasks;
 	private FileManager fManager;
+	ExecutorService executor = null;
 	
 	public TaskManager(FileManager fManager) {
-		tasks = new ArrayList<Task>();
+		executor = Executors.newFixedThreadPool(5);
 		this.fManager = fManager;
 	}
 
@@ -18,7 +24,16 @@ public class TaskManager {
 		this.fManager = fManager;
 	}
 	
-	public void addTask(Task task) {
-		tasks.add(task);
+	public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
+		switch(type) {
+		case BACKUPCHUNK:
+			return executor.submit(new BackUpChunkTask(fManager, chunk));
+		case STORECHUNK:
+			return executor.submit(new StoreChunkTask(fManager, chunk));
+		case RECEIVECHUNK:
+			return executor.submit(new ReceiveChunkTask(fManager, chunk));
+		default:
+			return null;
+		}
 	}
 }
