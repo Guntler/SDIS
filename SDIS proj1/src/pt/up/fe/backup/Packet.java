@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import javax.xml.stream.events.Characters;
+
 public class Packet {
 	protected ArrayList<String> msgArgs;
 	protected String packetType;
@@ -97,10 +99,21 @@ public class Packet {
 		this.chunkNo = chunkNo;
 	}
 
-
 	public void sendPacket(DatagramSocket socket) throws IOException {
 		byte[] buf = new byte[256];
 		String msg = new String();
+		msgArgs.add(packetType);
+		if(!version.equals(null))
+			msgArgs.add(version);
+		if(!fileID.equals(null))
+			msgArgs.add(fileID.toString());
+		if(chunkNo != 0)
+			msgArgs.add(Integer.toString(chunkNo));
+		if(replicationDeg != 0)
+			msgArgs.add(Integer.toString(replicationDeg));
+		//Inserir 0xD 0xA duas vezes
+		if(!data.equals(null))
+			msgArgs.add(data.toString());
 		
 		msg += msgArgs.get(0);
 		for(int i=1;i<msgArgs.size();i++) {
@@ -117,7 +130,97 @@ public class Packet {
 	public void parseMessage(String msg) {
 		if(msg.contains("PUTCHUNK")) {
 			String subMsg = msg.substring("PUTCHUNK".length());
-			
+			int nextSpace = subMsg.indexOf(' ');
+			String version = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String chunkNo = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String repDeg = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(0xA);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(0xA);
+			subMsg = subMsg.substring(nextSpace+1);
+			String body = subMsg.substring(0,nextSpace);
+			this.version = version;
+			this.fileID = fileID.getBytes();
+			this.chunkNo = Integer.parseInt(chunkNo);
+			this.replicationDeg = Integer.parseInt(repDeg);
+			this.data = body.getBytes();
+		}
+		else if(msg.contains("CHUNK")) {
+			String subMsg = msg.substring("CHUNK".length());
+			int nextSpace = subMsg.indexOf(' ');
+			String version = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String chunkNo = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(0xA);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(0xA);
+			subMsg = subMsg.substring(nextSpace+1);
+			String body = subMsg.substring(0,nextSpace);
+			this.version = version;
+			this.fileID = fileID.getBytes();
+			this.chunkNo = Integer.parseInt(chunkNo);
+			this.data = body.getBytes();
+		}
+		else if(msg.contains("GETCHUNK")) {
+			String subMsg = msg.substring("GETCHUNK".length());
+			int nextSpace = subMsg.indexOf(' ');
+			String version = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String chunkNo = subMsg.substring(0,nextSpace);
+			this.version = version;
+			this.fileID = fileID.getBytes();
+			this.chunkNo = Integer.parseInt(chunkNo);
+		}
+		else if(msg.contains("REMOVED")) {
+			String subMsg = msg.substring("REMOVED".length());
+			int nextSpace = subMsg.indexOf(' ');
+			String version = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String chunkNo = subMsg.substring(0,nextSpace);
+			this.version = version;
+			this.fileID = fileID.getBytes();
+			this.chunkNo = Integer.parseInt(chunkNo);
+		}
+		else if(msg.contains("STORED")) {
+			String subMsg = msg.substring("STORED".length());
+			int nextSpace = subMsg.indexOf(' ');
+			String version = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			subMsg = subMsg.substring(nextSpace+1);
+			nextSpace = subMsg.indexOf(' ');
+			String chunkNo = subMsg.substring(0,nextSpace);
+			this.version = version;
+			this.fileID = fileID.getBytes();
+			this.chunkNo = Integer.parseInt(chunkNo);
+		}
+		else if(msg.contains("DELETE")) {
+			String subMsg = msg.substring("DELETE".length());
+			int nextSpace = subMsg.indexOf(' ');
+			String fileID = subMsg.substring(0,nextSpace);
+			this.fileID = fileID.getBytes(); 
 		}
 	}
 }
