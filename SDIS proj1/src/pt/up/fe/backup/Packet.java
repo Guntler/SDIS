@@ -107,7 +107,7 @@ public class Packet {
 		if(!version.equals(null))
 			msgArgs.add(version);
 		if(!fileID.equals(null)) {
-			String str = new String(fileID,StandardCharsets.UTF_8);
+			String str = new String(fileID,StandardCharsets.ISO_8859_1);
 			msgArgs.add(str);
 		}
 		if(chunkNo != 0)
@@ -119,7 +119,7 @@ public class Packet {
 		msgArgs.add(Integer.toString(sep1)); msgArgs.add(Integer.toString(sep1));
 		msgArgs.add(Integer.toString(sep2)); msgArgs.add(Integer.toString(sep2));
 		if(!data.equals(null)) {
-			String str = new String(data,StandardCharsets.UTF_8);
+			String str = new String(data,StandardCharsets.ISO_8859_1);
 			msgArgs.add(str);
 		}
 		
@@ -128,7 +128,7 @@ public class Packet {
 			msg += " ";
 			msg += msgArgs.get(i);
 		}
-		
+
 		buf = msg.getBytes();
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getInetAddress(),socket.getPort());
 		
