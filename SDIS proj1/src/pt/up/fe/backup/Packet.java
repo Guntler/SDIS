@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.stream.events.Characters;
@@ -105,15 +106,22 @@ public class Packet {
 		msgArgs.add(packetType);
 		if(!version.equals(null))
 			msgArgs.add(version);
-		if(!fileID.equals(null))
-			msgArgs.add(fileID.toString());
+		if(!fileID.equals(null)) {
+			String str = new String(fileID,StandardCharsets.UTF_8);
+			msgArgs.add(str);
+		}
 		if(chunkNo != 0)
 			msgArgs.add(Integer.toString(chunkNo));
 		if(replicationDeg != 0)
 			msgArgs.add(Integer.toString(replicationDeg));
-		//Inserir 0xD 0xA duas vezes
-		if(!data.equals(null))
-			msgArgs.add(data.toString());
+		int sep1 = 0xA;
+		int sep2 = 0xD;
+		msgArgs.add(Integer.toString(sep1)); msgArgs.add(Integer.toString(sep1));
+		msgArgs.add(Integer.toString(sep2)); msgArgs.add(Integer.toString(sep2));
+		if(!data.equals(null)) {
+			String str = new String(data,StandardCharsets.UTF_8);
+			msgArgs.add(str);
+		}
 		
 		msg += msgArgs.get(0);
 		for(int i=1;i<msgArgs.size();i++) {
