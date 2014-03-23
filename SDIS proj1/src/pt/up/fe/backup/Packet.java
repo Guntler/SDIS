@@ -142,9 +142,9 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String repDeg = subMsg.substring(0,nextSpace);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(0xA);
+			nextSpace = subMsg.indexOf("DA");
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(0xA);
+			nextSpace = subMsg.indexOf("DA");
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			this.version = version;
@@ -164,9 +164,9 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String chunkNo = subMsg.substring(0,nextSpace);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(0xA);
+			nextSpace = subMsg.indexOf("DA");
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(0xA);
+			nextSpace = subMsg.indexOf("DA");
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			this.version = version;
