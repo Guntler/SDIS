@@ -7,10 +7,13 @@ import java.util.ArrayList;
 
 public class CommunicationManager implements Runnable {
 	static public enum CommandTypes {GETCHUNK, PUTCHUNK, RESTORE, REMOVED, STORED, CHUNK, DELETE};
+	static public enum Channels {MC, MDB, MDR};
 	protected ArrayList<String> mcastArgs;		//<IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>
 	protected MulticastSocket socketMC = null;
 	protected MulticastSocket socketMDB = null;
 	protected MulticastSocket socketMDR = null;
+	
+	boolean done;
 	
 	private DistributedBackupSystem dbs;
 
@@ -31,11 +34,27 @@ public class CommunicationManager implements Runnable {
 		socketMC.joinGroup(groupMC);
 		socketMDB.joinGroup(groupMDB);
 		socketMDR.joinGroup(groupMDR);
+		
+		done = false;
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-
+		while(!done) {
+			
+		}
 	};
+	
+	public void sendPacket(Packet p, Channels channel) throws IOException {
+		if(channel == Channels.MC) {
+			p.sendPacket(socketMC);
+		}
+		else if(channel == Channels.MDB) {
+			p.sendPacket(socketMDB);
+		}
+		else if(channel == Channels.MDR) {
+			p.sendPacket(socketMDR);
+		}
+	}
 }

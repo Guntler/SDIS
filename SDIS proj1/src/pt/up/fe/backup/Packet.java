@@ -121,7 +121,7 @@ public class Packet {
 	}
 
 
-	public void sendPacket(DatagramSocket socket, String mcastAddr, String mcastPort) throws IOException {
+	public void sendPacket(DatagramSocket socket) throws IOException {
 		byte[] buf = new byte[256];
 		String msg = new String();
 		
@@ -132,8 +132,7 @@ public class Packet {
 		}
 		
 		buf = msg.getBytes();
-		InetAddress address = InetAddress.getByName(mcastAddr);
-		DatagramPacket packet = new DatagramPacket(buf,buf.length,address,Integer.parseInt(mcastPort));
+		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getInetAddress(),socket.getPort());
 		
 		socket.send(packet);
 	}
