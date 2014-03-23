@@ -1,13 +1,14 @@
 package pt.up.fe.backup.tasks;
 
+import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.FileManager;
 
 public class UpdateStoredTask extends Task {
 	byte[] fileID;
 	int chunkNo;
 
-	public UpdateStoredTask(FileManager fManager, byte[] fileID, int chunkNo) {
-		super(fManager);
+	public UpdateStoredTask(FileManager fManager, CommunicationManager cManager, byte[] fileID, int chunkNo) {
+		super(fManager, cManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}

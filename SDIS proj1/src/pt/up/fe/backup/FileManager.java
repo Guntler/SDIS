@@ -14,12 +14,12 @@ public class FileManager {
 	private HashMap<byte[],BackupFile> files;
 	private ArrayList<BackupChunk> backedUpChunks;
 	private int maxSize, currSize;
-	private TaskManager tManager;
+	private DistributedBackupSystem dbs;
 	
-	public FileManager(TaskManager tManager) {
+	public FileManager(DistributedBackupSystem dbs) {
 		files = new HashMap<byte[],BackupFile>();
 		backedUpChunks = new ArrayList<BackupChunk>();
-		this.tManager = tManager;
+		this.dbs = dbs;
 	}
 	
 	public byte[] computeFileHash(String filename) {
@@ -70,7 +70,7 @@ public class FileManager {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead);
 					chunkCount++;
 					
-					tManager.executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);

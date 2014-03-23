@@ -27,10 +27,9 @@ public class DistributedBackupSystem {
 	}
 	
 	public void start() throws IOException {
-		tManager = new TaskManager(null,cManager);
-		fManager = new FileManager(tManager);
-		tManager.setfManager(fManager);
-		cManager = new CommunicationManager(tManager,mcastArgs,this);
+		tManager = new TaskManager(this);
+		fManager = new FileManager(this);
+		cManager = new CommunicationManager(mcastArgs,this);
 		cManager.run();
 	}
 	

@@ -16,28 +16,22 @@ import pt.up.fe.backup.tasks.UpdateStoredTask;
 public class TaskManager {
 	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETE, RESTORECHUNK};
 	
-	private FileManager fManager;
-	private CommunicationManager cManager;
+	private DistributedBackupSystem dbs;
 	ExecutorService executor = null;
 	
-	public TaskManager(FileManager fManager, CommunicationManager cm) {
+	public TaskManager(DistributedBackupSystem dbs) {
 		executor = Executors.newFixedThreadPool(5);
-		this.fManager = fManager;
-		setcManager(cm);
-	}
-
-	public void setfManager(FileManager fManager) {
-		this.fManager = fManager;
+		this.dbs = dbs;
 	}
 	
 	public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
 		switch(type) {
 		case BACKUPCHUNK:
-			return executor.submit(new BackUpChunkTask(fManager, chunk));
+			return executor.submit(new BackUpChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
 		case STORECHUNK:
-			return executor.submit(new StoreChunkTask(fManager, chunk));
+			return executor.submit(new StoreChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
 		case RECEIVECHUNK:
-			return executor.submit(new ReceiveChunkTask(fManager, chunk));
+			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
 		default:
 			return null;
 		}
@@ -46,46 +40,38 @@ public class TaskManager {
 	public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
 		case SENDCHUNK:
-			return executor.submit(new SendChunkTask(fManager, fileID, chunkNo));
+			return executor.submit(new SendChunkTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
 		case UPDATESTORED:
-			return executor.submit(new UpdateStoredTask(fManager, fileID, chunkNo));
+			return executor.submit(new UpdateStoredTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
 		case HANDLE_REMOVE:
-			return executor.submit(new HandleRemoveTask(fManager, fileID, chunkNo));
+			return executor.submit(new HandleRemoveTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
 		case DELETE:
-			return executor.submit(new DeleteTask(fManager, fileID));
+			return executor.submit(new DeleteTask(dbs.getFManager(), dbs.getCManager(), fileID));
 		case RESTORECHUNK:
-			return executor.submit(new RestoreChunkTask(fManager, fileID, chunkNo));
+			return executor.submit(new RestoreChunkTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
 		default:
 			return null;
 		}
 	}
-
-	public CommunicationManager getcManager() {
-		return cManager;
-	}
-
-	public void setcManager(CommunicationManager cManager) {
-		this.cManager = cManager;
-	}
 	
 	public Future<?> executeTask(Packet packet) {
 		if(packet.packetType.equals("PUTCHUNK")) {
-			return executor.submit(new StoreChunkTask(fManager, packet.getChunk()));
+			return executor.submit(new StoreChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
 		}
 		else if (packet.packetType.equals("GETCHUNK")) {
-			return executor.submit(new SendChunkTask(fManager, packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new SendChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("DELETE")) {
-			return executor.submit(new DeleteTask(fManager, packet.getFileID()));
+			return executor.submit(new DeleteTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID()));
 		}
 		else if (packet.packetType.equals("REMOVED")) {
-			return executor.submit(new HandleRemoveTask(fManager, packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new HandleRemoveTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("STORED")) {
-			return executor.submit(new UpdateStoredTask(fManager, packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new UpdateStoredTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("CHUNK")) {
-			return executor.submit(new ReceiveChunkTask(fManager, packet.getChunk()));
+			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
 		}
 		return null;
 	}
