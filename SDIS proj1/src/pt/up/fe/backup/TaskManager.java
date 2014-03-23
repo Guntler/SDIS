@@ -17,4 +17,8 @@ public class TaskManager {
 	public void setfManager(FileManager fManager) {
 		this.fManager = fManager;
 	}
+	
+	public void addTask(Task task) {
+		tasks.add(task);
+	}
 }

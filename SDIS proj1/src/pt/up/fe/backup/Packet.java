@@ -47,8 +47,11 @@ public class Packet {
 		byte[] buf = new byte[256];
 		String msg = new String();
 		
-		for(int i=0;i<msgArgs.size();i++)
+		msg += msgArgs.get(0);
+		for(int i=1;i<msgArgs.size();i++) {
+			msg += " ";
 			msg += msgArgs.get(i);
+		}
 		
 		buf = msg.getBytes();
 		InetAddress address = InetAddress.getByName(mcastAddr);

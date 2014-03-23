@@ -3,6 +3,7 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 
 public class DistributedBackupSystem {
 	private FileManager fManager;
@@ -11,7 +12,7 @@ public class DistributedBackupSystem {
 	
 	protected static MulticastSocket socket = null;
 	
-	protected static String[] mcastArgs;
+	protected static ArrayList<String> mcastArgs;
 	
 	/**
 	 * @param args	<IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR> 
@@ -22,7 +23,8 @@ public class DistributedBackupSystem {
 			System.out.println("Usage: java DistributedBackupSystem <IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>");
 			return;
 		}
-		mcastArgs = args;
+		for(int i=0;i<args.length;i++)
+			mcastArgs.add(args[i]);
 		
 		DistributedBackupSystem system = new DistributedBackupSystem();
 		system.start();
@@ -35,10 +37,10 @@ public class DistributedBackupSystem {
 		listener = new PacketListener(tManager);
 		listener.run();
 		
-		final int mCastPort = Integer.parseInt(mcastArgs[1]);
+		final int mCastPort = Integer.parseInt(mcastArgs.get(1));
 		
 		socket = new MulticastSocket(mCastPort);
-		InetAddress group = InetAddress.getByName(mcastArgs[0]);
+		InetAddress group = InetAddress.getByName(mcastArgs.get(0));
 		socket.joinGroup(group);
 	}
 }
