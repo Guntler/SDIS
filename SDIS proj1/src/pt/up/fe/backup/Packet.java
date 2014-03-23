@@ -136,7 +136,6 @@ public class Packet {
 		socket.send(packet);
 	}
 	
-	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 	public static String bytesToHex(byte[] array) {
 	    return DatatypeConverter.printHexBinary(array);
 	}
