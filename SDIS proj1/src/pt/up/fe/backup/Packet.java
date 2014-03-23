@@ -9,6 +9,11 @@ import java.util.ArrayList;
 public class Packet {
 	protected ArrayList<String> msgArgs;
 	protected String packetType;
+	protected byte[] fileID;
+	protected int chunkNo;
+	protected int replicationDeg;
+	protected String version;
+	protected BackupChunk chunk;
 	
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
@@ -29,7 +34,7 @@ public class Packet {
 	 * GETCHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 * REMOVED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 */
-	public Packet(String packetType, String version, byte[] fileID, int chunkNo ) {
+	public Packet(String packetType, int version, byte[] fileID, int chunkNo ) {
 		this.packetType = packetType;
 	}
 
@@ -56,6 +61,55 @@ public class Packet {
 	public Packet(String version, BackupChunk chunk) {
 		packetType = "CHUNK";
 	}
+	
+	public BackupChunk getChunk() {
+		return chunk;
+	}
+
+	public void setChunk(BackupChunk chunk) {
+		this.chunk = chunk;
+	}
+
+	public String getPacketType() {
+		return packetType;
+	}
+
+	public void setPacketType(String packetType) {
+		this.packetType = packetType;
+	}
+
+	public int getReplicationDeg() {
+		return replicationDeg;
+	}
+
+	public void setReplicationDeg(int replicationDeg) {
+		this.replicationDeg = replicationDeg;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public byte[] getFileID() {
+		return fileID;
+	}
+
+	public void setFileID(byte[] fileID) {
+		this.fileID = fileID;
+	}
+
+	public int getChunkNo() {
+		return chunkNo;
+	}
+
+	public void setChunkNo(int chunkNo) {
+		this.chunkNo = chunkNo;
+	}
+
 
 	public void sendPacket(DatagramSocket socket, String mcastAddr, String mcastPort) throws IOException {
 		byte[] buf = new byte[256];
