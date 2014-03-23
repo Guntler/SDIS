@@ -19,48 +19,25 @@ public class Packet {
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
 	 */
-	public Packet() {
+	public Packet(String msg) {
+		parseMessage(msg);
 	}
 	
 	/**
 	 * Constructor for PutChunk
 	 * PUTCHUNK <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF> <CRLF> <Body>
-	 */
-	public Packet(String version, int replicationDeg, BackupChunk chunk ) {
-		packetType = "PUTCHUNK";
-	}
-
-	/**
-	 * Constructor for GetChunk and Removed
+	 * CHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF> <Body>
 	 * GETCHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 * REMOVED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
-	 */
-	public Packet(String packetType, int version, byte[] fileID, int chunkNo ) {
-		this.packetType = packetType;
-	}
-
-	/**
-	 * Constructor for Delete
+	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 * DELETE <FileId> <CRLF>
 	 */
-	public Packet(int filedId) {
-		packetType = "DELETE";
+	public Packet(String packetType, String version, BackupChunk chunk ) {
+		this.packetType = packetType;
 	}
 	
-	/**
-	 * Constructor for Stored
-	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
-	 */
-	public Packet(String version, byte[] fileID, int chunkNo) {
-		packetType = "STORED";
-	}
-	
-	/**
-	 * Constructor for Chunk
-	 * CHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF> <Body>
-	 */
-	public Packet(String version, BackupChunk chunk) {
-		packetType = "CHUNK";
+	public Packet(String packetType, String version, byte[] fileID, int chunkNo, int repDeg, byte[] body ) {
+		this.packetType = packetType;
 	}
 	
 	public BackupChunk getChunk() {
@@ -135,5 +112,12 @@ public class Packet {
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getInetAddress(),socket.getPort());
 		
 		socket.send(packet);
+	}
+	
+	public void parseMessage(String msg) {
+		if(msg.contains("PUTCHUNK")) {
+			String subMsg = msg.substring("PUTCHUNK".length());
+			
+		}
 	}
 }
