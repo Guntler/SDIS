@@ -29,7 +29,7 @@ public class Packet {
 	 * GETCHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 * REMOVED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 */
-	public Packet(String packetType, String version, int fileID, int chunkNo ) {
+	public Packet(String packetType, String version, byte[] fileID, int chunkNo ) {
 		this.packetType = packetType;
 	}
 
@@ -45,7 +45,7 @@ public class Packet {
 	 * Constructor for Stored
 	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 */
-	public Packet(String version, int filedId, int chunkNo) {
+	public Packet(String version, byte[] fileID, int chunkNo) {
 		packetType = "STORED";
 	}
 	
