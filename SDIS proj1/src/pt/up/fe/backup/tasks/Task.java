@@ -9,7 +9,7 @@ import pt.up.fe.backup.Packet;
 public abstract class Task implements Runnable {
 	protected FileManager fManager;
 	protected CommunicationManager cManager;
-	ArrayList<Packet> messages;
+	protected ArrayList<Packet> messages;
 	
 	public Task(FileManager fManager, CommunicationManager cManager) {
 		this.fManager = fManager;

@@ -8,12 +8,28 @@ public class BackupChunk {
 	private byte[] data;
 	private String filename;
 	private int size;
+	private int curReplicationDegree;
+	private int wantedReplicationDegree;
 	
-	public BackupChunk(byte[] fileID, int chunkNo, byte[] data, String filename, int size) {
+	public BackupChunk(byte[] fileID, int chunkNo, byte[] data, String filename, int size, int replicationDegree) {
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 		this.data = data;
 		this.filename = filename;
 		this.size = size;
+		this.curReplicationDegree = 0;
+		this.wantedReplicationDegree = replicationDegree;
+	}
+
+	public byte[] getFileID() {
+		return fileID;
+	}
+
+	public int getChunkNo() {
+		return chunkNo;
+	}
+
+	public int getWantedReplicationDegree() {
+		return wantedReplicationDegree;
 	}
 }

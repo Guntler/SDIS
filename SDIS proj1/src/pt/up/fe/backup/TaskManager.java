@@ -2,6 +2,7 @@ package pt.up.fe.backup;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.DeleteTask;
@@ -16,7 +17,7 @@ public class TaskManager {
 	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETE, RESTORECHUNK};
 	
 	private DistributedBackupSystem dbs;
-	ExecutorService executor = null;
+	TaskExecutor executor = null;
 	
 	public TaskManager(DistributedBackupSystem dbs) {
 		executor = new TaskExecutor(5);
@@ -73,5 +74,12 @@ public class TaskManager {
 			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
 		}
 		return null;
+	}
+	
+	public void handlePacket(Packet packet) {
+		if(packet.packetType.equals("STORED")) {
+			executor.messageActiveTasks(packet);
+		}
+		//complete this with other messages
 	}
 }

@@ -51,7 +51,7 @@ public class FileManager {
 			    		int chunkNo = Integer.parseInt(parts[2]);
 			    		int repDegree = Integer.parseInt(parts[3]);
 			    		
-			    		backedUpChunks.add(new BackupChunk(hash, chunkNo, null, null, repDegree));
+			    		backedUpChunks.add(new BackupChunk(hash, chunkNo, null, null, 0, repDegree));
 			    	}
 			    	
 			    }
@@ -106,13 +106,14 @@ public class FileManager {
 				int chunkCount = 0;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
-					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead);
+					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree);
 					chunkCount++;
 					
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
+				files.put(fileHash, newFile);
 
 				reader.close();
 
@@ -121,5 +122,9 @@ public class FileManager {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public synchronized void addChunkToList(BackupChunk c) {
+		this.backedUpChunks.add(c);
 	}
 }
