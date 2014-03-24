@@ -51,16 +51,18 @@ public class CommunicationManager implements Runnable {
 		Thread threadMDB = new Thread(handlerMDB);
 		Thread threadMDR = new Thread(handlerMDR);
 		threadMC.run();threadMDB.run();threadMDR.run();
-		
+
 		while(!done) {
 			if(receivedQueue.size() != 0) {
-				dbs.getTManager().executeTask(receivedQueue.get(0));
-				receivedQueue.remove(0);
+				synchronized(this) {
+					dbs.getTManager().executeTask(receivedQueue.get(0));
+					receivedQueue.remove(0);
+				}
 			}
 		}
 	};
 	
-	public void sendPacket(Packet p, Channels channel) throws IOException {
+	synchronized public void sendPacket(Packet p, Channels channel) throws IOException {
 		if(channel == Channels.MC) {
 			p.sendPacket(socketMC);
 		}
@@ -72,7 +74,7 @@ public class CommunicationManager implements Runnable {
 		}
 	}
 	
-	public void addPacketToReceived(Packet p) {
+	synchronized public void addPacketToReceived(Packet p) {
 		this.receivedQueue.add(p);
 	}
 }

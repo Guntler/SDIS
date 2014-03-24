@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.stream.events.Characters;
 
 public class Packet {
 	protected ArrayList<String> msgArgs;

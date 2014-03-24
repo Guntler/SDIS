@@ -1,7 +1,6 @@
 package pt.up.fe.backup;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import pt.up.fe.backup.tasks.BackUpChunkTask;
@@ -20,11 +19,11 @@ public class TaskManager {
 	ExecutorService executor = null;
 	
 	public TaskManager(DistributedBackupSystem dbs) {
-		executor = Executors.newFixedThreadPool(5);
+		executor = new TaskExecutor(5);
 		this.dbs = dbs;
 	}
 	
-	public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
+	synchronized public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
 		switch(type) {
 		case BACKUPCHUNK:
 			return executor.submit(new BackUpChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
@@ -37,7 +36,7 @@ public class TaskManager {
 		}
 	}
 	
-	public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
+	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
 		case SENDCHUNK:
 			return executor.submit(new SendChunkTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
@@ -54,7 +53,7 @@ public class TaskManager {
 		}
 	}
 	
-	public Future<?> executeTask(Packet packet) {
+	synchronized public Future<?> executeTask(Packet packet) {
 		if(packet.packetType.equals("PUTCHUNK")) {
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
 		}
