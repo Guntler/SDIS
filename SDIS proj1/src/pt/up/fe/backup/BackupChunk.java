@@ -15,7 +15,7 @@ public class BackupChunk {
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 		this.data = data;
-		this.filename = filename;
+		this.setFilename(filename);
 		this.size = size;
 		this.curReplicationDegree = 0;
 		this.wantedReplicationDegree = replicationDegree;
@@ -31,5 +31,17 @@ public class BackupChunk {
 
 	public int getWantedReplicationDegree() {
 		return wantedReplicationDegree;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 }

@@ -27,7 +27,6 @@ public class CommunicationManager implements Runnable {
 		final int mCastPort = Integer.parseInt(this.mcastArgs.get(1));
 		final int mBackupPort = Integer.parseInt(this.mcastArgs.get(3));
 		final int mRecoverPort = Integer.parseInt(this.mcastArgs.get(5));
-		
 		socketMC = new MulticastSocket(mCastPort);
 		socketMDB = new MulticastSocket(mBackupPort);
 		socketMDR = new MulticastSocket(mRecoverPort);

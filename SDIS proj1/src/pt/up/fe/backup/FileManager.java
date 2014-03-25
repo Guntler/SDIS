@@ -4,7 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -15,16 +19,28 @@ public class FileManager {
 	
 	private HashMap<byte[],BackupFile> files;
 	private ArrayList<BackupChunk> backedUpChunks;
-	private int maxSize, currSize;
+	private long maxSize, currSize;
 	private DistributedBackupSystem dbs;
+	private int nextAvailableFileNo;
 	
 	public FileManager(DistributedBackupSystem dbs) {
 		files = new HashMap<byte[],BackupFile>();
 		backedUpChunks = new ArrayList<BackupChunk>();
 		this.dbs = dbs;
+		this.nextAvailableFileNo = 0;
 		
 		BufferedReader reader;
 		try {
+			File log = new File("log.txt");
+			
+			if(!log.exists())
+			{
+				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+				writer.println("allocatedmemory: 1073741824");
+				writer.println("usedmemory: 0");
+				writer.close();
+			}
+			
 			reader = new BufferedReader(new FileReader("log.txt"));
 			
 			String line = null;
@@ -74,6 +90,7 @@ public class FileManager {
 
 			hashSum.update(file.getName().getBytes());
 			hashSum.update(ByteBuffer.allocate(8).putLong(file.lastModified()).array());
+			hashSum.update(Inet4Address.getLocalHost().getHostAddress().getBytes());
 
 			while((bytesRead = reader.read(buffer,0,bytesToRead)) != -1) {
 				hashSum.update(buffer, 0, bytesRead);
@@ -124,7 +141,37 @@ public class FileManager {
 		}
 	}
 	
-	public synchronized void addChunkToList(BackupChunk c) {
-		this.backedUpChunks.add(c);
+	public boolean saveChunk(BackupChunk c) {
+		
+		for(BackupChunk chunk : backedUpChunks) {
+			if(chunk.getFileID().equals(c.getFileID()) && chunk.getChunkNo() == c.getChunkNo()) {
+				return false;
+			}
+		}
+		
+		String name = "";
+		
+		name += "chunk-";
+		name += this.nextAvailableFileNo;
+		name += "-";
+		name += c.getChunkNo();
+		
+		c.setFilename(name);
+		
+		File storeDir = new File("storage");
+		storeDir.mkdir();
+		
+		try {
+			FileOutputStream out = new FileOutputStream(name);
+			out.write(c.getData());
+			out.close();
+			this.backedUpChunks.add(c);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		nextAvailableFileNo++;
+		return true;
 	}
 }

@@ -17,7 +17,6 @@ public class Packet {
 	protected int replicationDeg;
 	protected String version;
 	protected byte[] data;
-	protected BackupChunk chunk;
 	
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
@@ -37,20 +36,21 @@ public class Packet {
 	 */
 	public Packet(String packetType, String version, BackupChunk chunk ) {
 		this.packetType = packetType;
+		this.version = version;
+		this.chunkNo = chunk.getChunkNo();
+		this.replicationDeg = chunk.getWantedReplicationDegree();
+		this.data = chunk.getData();
+		this.fileID = chunk.getFileID();
 	}
 	
 	public Packet(String packetType, String version, byte[] fileID, int chunkNo, int repDeg, byte[] body ) {
 		this.packetType = packetType;
+		this.version = version;
+		this.fileID = fileID;
+		this.chunkNo = chunkNo;
+		this.replicationDeg = repDeg;
+		this.data = body;
 	}
-	
-	public BackupChunk getChunk() {
-		return chunk;
-	}
-
-	public void setChunk(BackupChunk chunk) {
-		this.chunk = chunk;
-	}
-
 	
 	public byte[] getData() {
 		return data;
@@ -237,5 +237,9 @@ public class Packet {
 			String fileID = subMsg.substring(0,nextSpace);
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 		}
+	}
+
+	public BackupChunk getChunk() {
+		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg);
 	}
 }
