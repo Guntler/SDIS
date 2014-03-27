@@ -106,23 +106,12 @@ public class Packet {
 		if(!version.equals(null))
 			msgArgs.add(version);
 		if(!fileID.equals(null)) 
-			msgArgs.add(bytesToHex(fileID));
+			msgArgs.add(bytesToHex(fileID).toLowerCase());
 		
 		if(chunkNo != -1)
 			msgArgs.add(Integer.toString(chunkNo));
 		if(replicationDeg != 0)
 			msgArgs.add(Integer.toString(replicationDeg));
-	
-		//msgArgs.add(new String(new byte[] {0xA}));
-		//msgArgs.add(new String(new byte[] {0xD}));
-		msgArgs.add(new String("\\r\\n"));
-		if(!packetType.equals("DELETE")) {
-			msgArgs.add(new String("\\r\\n"));
-		}
-		if(!data.equals(null)) {
-			String str = new String(data,StandardCharsets.ISO_8859_1);
-			msgArgs.add(str);
-		}
 		
 		msg += msgArgs.get(0);
 		for(int i=1;i<msgArgs.size();i++) {
@@ -130,6 +119,18 @@ public class Packet {
 			msg += msgArgs.get(i);
 		}
 
+		msg += new String(new byte[] {0xA});
+		msg += new String(new byte[] {0xD});
+		
+		if(!packetType.equals("DELETE")) {
+			msg += new String(new byte[] {0xA});
+			msg += new String(new byte[] {0xD});
+		}
+		
+		//if(data.length != 0)
+			//msg += bytesToHex(data);
+		
+		System.out.println("Sending packet: " + msg);
 		buf = msg.getBytes();
 		
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getMcastGroup(),socket.getLocalPort());
@@ -155,8 +156,6 @@ public class Packet {
 			String repDeg = packOptions[4].split("\\r?\\n")[0];
 			String body = packOptions[4].split("\\r?\\n")[2];
 			this.fileID = hexToByte(fileID);
-			System.out.println(fileID.toString());
-			System.out.println(this.fileID);
 			this.version = version;
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.replicationDeg = Integer.parseInt(repDeg);
