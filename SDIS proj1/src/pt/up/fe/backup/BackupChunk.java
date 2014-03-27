@@ -44,4 +44,12 @@ public class BackupChunk {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+	
+	public void incRepDeg(int inc) {
+		curReplicationDegree += inc;
+	}
+	
+	public int getRepDeg() {
+		return curReplicationDegree;
+	}
 }

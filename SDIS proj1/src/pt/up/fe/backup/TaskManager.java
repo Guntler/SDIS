@@ -33,11 +33,18 @@ public class TaskManager {
 			return null;
 		}
 	}
+
+	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo, byte[] body) {
+		switch(type) {
+		case SENDCHUNK:
+			return executor.submit(new SendChunkTask(dbs.getFManager(), fileID, chunkNo, body));
+		default:
+			return null;
+		}
+	}
 	
 	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
-		case SENDCHUNK:
-			return executor.submit(new SendChunkTask(dbs.getFManager(), fileID, chunkNo));
 		case UPDATESTORED:
 			return executor.submit(new UpdateStoredTask(dbs.getFManager(), fileID, chunkNo));
 		case HANDLE_REMOVE:
@@ -56,7 +63,7 @@ public class TaskManager {
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
 		else if (packet.packetType.equals("GETCHUNK")) {
-			return executor.submit(new SendChunkTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new SendChunkTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getData()));
 		}
 		else if (packet.packetType.equals("DELETE")) {
 			return executor.submit(new DeleteTask(dbs.getFManager(), packet.getFileID()));

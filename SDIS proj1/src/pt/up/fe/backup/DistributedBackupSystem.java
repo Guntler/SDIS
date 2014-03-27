@@ -80,6 +80,7 @@ public class DistributedBackupSystem {
 				}
 			}
 		}
+		console.close();
 	}
 
 	

@@ -112,9 +112,13 @@ public class Packet {
 			msgArgs.add(Integer.toString(chunkNo));
 		if(replicationDeg != 0)
 			msgArgs.add(Integer.toString(replicationDeg));
-		int sep1 = 0xA;
-		int sep2 = 0xD;
-		msgArgs.add("\r\f"); msgArgs.add("\r\f");
+	
+		msgArgs.add(new String(new byte[] {0xA}));
+		msgArgs.add(new String(new byte[] {0xD}));
+		if(!packetType.equals("DELETE")) {
+			msgArgs.add(new String(new byte[] {0xA}));
+			msgArgs.add(new String(new byte[] {0xD}));
+		}
 		if(!data.equals(null)) {
 			String str = new String(data,StandardCharsets.ISO_8859_1);
 			msgArgs.add(str);
@@ -142,6 +146,10 @@ public class Packet {
 	}
 	
 	public void parseMessage(String msg) {
+		String cr = new String(new byte[] {0xA});
+		String lf = new String(new byte[] {0xD});
+		String crlf = cr+lf;
+		
 		if(msg.contains("PUTCHUNK")) {
 			String subMsg = msg.substring("PUTCHUNK".length());
 			int nextSpace = subMsg.indexOf(' ');
@@ -156,9 +164,10 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String repDeg = subMsg.substring(0,nextSpace);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf("DA");
+			
+			nextSpace = subMsg.indexOf(crlf);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf("DA");
+			nextSpace = subMsg.indexOf(crlf);
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
@@ -178,9 +187,9 @@ public class Packet {
 			nextSpace = subMsg.indexOf(' ');
 			String chunkNo = subMsg.substring(0,nextSpace);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf("DA");
+			nextSpace = subMsg.indexOf(crlf);
 			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf("DA");
+			nextSpace = subMsg.indexOf(crlf);
 			subMsg = subMsg.substring(nextSpace+1);
 			String body = subMsg.substring(0,nextSpace);
 			this.version = version;

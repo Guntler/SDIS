@@ -2,7 +2,6 @@ package pt.up.fe.backup;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.util.ArrayList;
 
 public class CommunicationManager implements Runnable {

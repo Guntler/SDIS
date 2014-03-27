@@ -29,9 +29,7 @@ public class BackUpChunkTask extends Task {
 				int storedCount = 0;
 				try {
 					Thread.sleep(waitTime);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				} catch (InterruptedException e) {e.printStackTrace();}
 
 				for(Packet p : messages) {
 					if(p.getPacketType().equals("STORED") && p.getFileID().equals(chunk.getFileID()) && p.getChunkNo() == chunk.getChunkNo()) {
@@ -48,8 +46,6 @@ public class BackUpChunkTask extends Task {
 				else
 					done = true;
 			} while (!done);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (IOException e) {e.printStackTrace();}
 	}
 }

@@ -14,7 +14,7 @@ public class ReceiveChunkTask extends Task {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		boolean result = fManager.saveChunk(chunk);
 		
 	}
 

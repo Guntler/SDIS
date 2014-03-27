@@ -49,10 +49,10 @@ public class FileManager {
 			    
 			    if(parts.length >= 2) {
 			    	if(parts[0].equals("allocatedmemory:")) {
-			    		maxSize = Integer.parseInt(parts[1]);
+			    		setMaxSize(Integer.parseInt(parts[1]));
 			    	}
 			    	else if (parts[0].equals("usedmemory:")) {
-			    		currSize = Integer.parseInt(parts[1]);
+			    		setCurrSize(Integer.parseInt(parts[1]));
 			    	}
 			    	else if (parts[0].equals("file:") && parts.length == 5) {
 			    		byte[] hash = Packet.hexToByte(parts[1]);
@@ -171,5 +171,45 @@ public class FileManager {
 		
 		nextAvailableFileNo++;
 		return true;
+	}
+
+	/**
+	 * Deletes Chunk from FileSystem.
+	 * Unfinished. TODO
+	 * @param fileID
+	 * @return
+	 */
+	public boolean deleteChunk(byte[] fileID) {
+		boolean found = false;
+		
+		for(BackupChunk chunk : backedUpChunks) {
+			if(chunk.getFileID().equals(fileID)) {
+				found=true;
+			}
+		}
+		
+		if(found) {
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public long getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(long maxSize) {
+		this.maxSize = maxSize;
+	}
+
+	public long getCurrSize() {
+		return currSize;
+	}
+
+	public void setCurrSize(long currSize) {
+		this.currSize = currSize;
 	}
 }

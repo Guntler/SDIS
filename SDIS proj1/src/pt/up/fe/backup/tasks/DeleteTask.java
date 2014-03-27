@@ -1,7 +1,11 @@
 package pt.up.fe.backup.tasks;
 
+import java.io.IOException;
+
 import pt.up.fe.backup.CommunicationManager;
+import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
+import pt.up.fe.backup.Packet;
 
 public class DeleteTask extends Task {
 	byte[] fileID;
@@ -13,7 +17,10 @@ public class DeleteTask extends Task {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		try {
+			Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
+			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
+			//write info to log
+		} catch (IOException e) {e.printStackTrace();}	
 	}
 }
