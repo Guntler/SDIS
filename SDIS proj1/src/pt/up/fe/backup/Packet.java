@@ -147,16 +147,17 @@ public class Packet {
 	
 	public void parseMessage(String msg) {
 		if(msg.contains("PUTCHUNK")) {
+			this.packetType = "PUTCHUNK";
 			String[] packOptions = msg.split(" ");
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3];
 			String repDeg = packOptions[4].split("\\r?\\n")[0];
 			String body = packOptions[4].split("\\r?\\n")[2];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.fileID = hexToByte(fileID);
+			System.out.println(fileID.toString());
 			System.out.println(this.fileID);
 			this.version = version;
-			this.packetType = "PUTCHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.replicationDeg = Integer.parseInt(repDeg);
 			this.data = body.getBytes();
@@ -167,7 +168,7 @@ public class Packet {
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			String body = packOptions[3].split("\\r?\\n")[2];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 			this.version = version;
 			this.packetType = "CHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -178,7 +179,7 @@ public class Packet {
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 			this.version = version;
 			this.packetType = "GETCHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -188,7 +189,7 @@ public class Packet {
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			try {this.fileID = fileID.getBytes("UTF_8");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 			this.version = version;
 			this.packetType = "REMOVED";
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -198,7 +199,7 @@ public class Packet {
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 			this.version = version;
 			this.packetType = "STORED";
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -206,7 +207,7 @@ public class Packet {
 		else if(msg.contains("DELETE")) {
 			String[] packOptions = msg.split(" ");
 			String fileID = packOptions[1].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 			this.packetType = "DELETE";
 		}
 	}

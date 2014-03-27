@@ -22,6 +22,7 @@ public class DistributedBackupSystem {
 			System.out.println("Usage: java DistributedBackupSystem <IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>");
 			return;
 		}
+		
 		for(int i=0;i<args.length;i++)
 			mcastArgs.add(args[i]);
 
