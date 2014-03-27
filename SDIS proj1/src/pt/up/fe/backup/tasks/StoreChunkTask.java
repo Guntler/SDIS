@@ -19,9 +19,10 @@ public class StoreChunkTask extends Task {
 	@Override
 	public void run() {
 		
-		boolean result = fManager.saveChunk(chunk);
+		boolean result = DistributedBackupSystem.fManager.saveChunk(chunk);
 		
 		if(result) {
+			System.out.println("Result is true");
 			try {
 				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
 				//write info to log
@@ -30,6 +31,7 @@ public class StoreChunkTask extends Task {
 			}
 		}
 		
+		System.out.println("Result is false");
 	}
 
 }

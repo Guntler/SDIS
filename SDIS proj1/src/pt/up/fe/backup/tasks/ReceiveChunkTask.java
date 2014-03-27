@@ -1,7 +1,6 @@
 package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.BackupChunk;
-import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.FileManager;
 
 public class ReceiveChunkTask extends Task {

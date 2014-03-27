@@ -1,6 +1,5 @@
 package pt.up.fe.backup.tasks;
 
-import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.FileManager;
 
 public class UpdateStoredTask extends Task {

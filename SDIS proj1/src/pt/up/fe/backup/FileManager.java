@@ -119,7 +119,7 @@ public class FileManager {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
 				int bytesRead = 0;
-				int chunkCount = 1;
+				int chunkCount = 0;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree);
@@ -142,6 +142,8 @@ public class FileManager {
 	public boolean saveChunk(BackupChunk c) {
 		
 		for(BackupChunk chunk : backedUpChunks) {
+			System.out.println("Received ID is: " + c.getFileID());
+			System.out.println("Comparing with: " + chunk.getFileID());
 			if(chunk.getFileID().equals(c.getFileID()) && chunk.getChunkNo() == c.getChunkNo()) {
 				return false;
 			}
@@ -160,7 +162,7 @@ public class FileManager {
 		storeDir.mkdir();
 		
 		try {
-			FileOutputStream out = new FileOutputStream(name);
+			FileOutputStream out = new FileOutputStream("storage/"+name);
 			out.write(c.getData());
 			out.close();
 			this.backedUpChunks.add(c);

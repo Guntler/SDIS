@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DistributedBackupSystem {
-	static private FileManager fManager = null;
+	static public FileManager fManager = null;
 	static private TaskManager tManager = null;
 	static public CommunicationManager cManager = null;
 	

@@ -108,7 +108,7 @@ public class Packet {
 		if(!fileID.equals(null)) 
 			msgArgs.add(bytesToHex(fileID));
 		
-		if(chunkNo != 0)
+		if(chunkNo != -1)
 			msgArgs.add(Integer.toString(chunkNo));
 		if(replicationDeg != 0)
 			msgArgs.add(Integer.toString(replicationDeg));
@@ -151,27 +151,16 @@ public class Packet {
 		String crlf = cr+lf;
 		
 		if(msg.contains("PUTCHUNK")) {
-			String subMsg = msg.substring("PUTCHUNK".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String version = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String chunkNo = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String repDeg = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			
-			nextSpace = subMsg.indexOf(crlf);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(crlf);
-			subMsg = subMsg.substring(nextSpace+1);
-			String body = subMsg.substring(0,nextSpace);
+			String[] packOptions = msg.split(" ");
+			String version = packOptions[1];
+			String fileID = packOptions[2];
+			String chunkNo = packOptions[3];
+			String repDeg = packOptions[4].split("\\r?\\n")[0];
+			String body = packOptions[4].split("\\r?\\n")[2];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			System.out.println(this.fileID);
 			this.version = version;
+			this.packetType = "PUTCHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.replicationDeg = Integer.parseInt(repDeg);
 			this.data = body.getBytes();
