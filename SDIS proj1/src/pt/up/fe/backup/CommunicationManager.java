@@ -9,12 +9,12 @@ public class CommunicationManager implements Runnable {
 	static public enum CommandTypes {GETCHUNK, PUTCHUNK, RESTORE, REMOVED, STORED, CHUNK, DELETE};
 	static public enum Channels {MC, MDB, MDR};
 	protected ArrayList<String> mcastArgs;		//<IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>
-	protected MulticastSocket socketMC = null;
-	protected MulticastSocket socketMDB = null;
-	protected MulticastSocket socketMDR = null;
-	protected SocketListener handlerMC = null;
-	protected SocketListener handlerMDB = null;
-	protected SocketListener handlerMDR = null;
+	protected DBSsocket socketMC = null;
+	protected DBSsocket socketMDB = null;
+	protected DBSsocket socketMDR = null;
+	protected SocketListener listenerMC = null;
+	protected SocketListener listenerMDB = null;
+	protected SocketListener listenerMDR = null;
 	private boolean done;
 	private ArrayList<Packet> receivedQueue;
 	
@@ -27,9 +27,9 @@ public class CommunicationManager implements Runnable {
 		final int mCastPort = Integer.parseInt(this.mcastArgs.get(1));
 		final int mBackupPort = Integer.parseInt(this.mcastArgs.get(3));
 		final int mRecoverPort = Integer.parseInt(this.mcastArgs.get(5));
-		socketMC = new MulticastSocket(mCastPort);
-		socketMDB = new MulticastSocket(mBackupPort);
-		socketMDR = new MulticastSocket(mRecoverPort);
+		socketMC = new DBSsocket(mCastPort);
+		socketMDB = new DBSsocket(mBackupPort);
+		socketMDR = new DBSsocket(mRecoverPort);
 		InetAddress groupMC = InetAddress.getByName(this.mcastArgs.get(0));
 		InetAddress groupMDB = InetAddress.getByName(this.mcastArgs.get(2));
 		InetAddress groupMDR = InetAddress.getByName(this.mcastArgs.get(4));
@@ -43,13 +43,13 @@ public class CommunicationManager implements Runnable {
 
 	@Override
 	public void run() {
-		handlerMC = new SocketListener(socketMC, this);
-		handlerMDB = new SocketListener(socketMDB, this);
-		handlerMDR = new SocketListener(socketMDR, this);
-		Thread threadMC = new Thread(handlerMC);
-		Thread threadMDB = new Thread(handlerMDB);
-		Thread threadMDR = new Thread(handlerMDR);
-		threadMC.run();threadMDB.run();threadMDR.run();
+		listenerMC = new SocketListener(socketMC, this);
+		listenerMDB = new SocketListener(socketMDB, this);
+		listenerMDR = new SocketListener(socketMDR, this);
+		Thread threadMC = new Thread(listenerMC);
+		Thread threadMDB = new Thread(listenerMDB);
+		Thread threadMDR = new Thread(listenerMDR);
+		threadMC.start();threadMDB.start();threadMDR.start();
 
 		while(!done) {
 			if(receivedQueue.size() != 0) {
@@ -75,5 +75,12 @@ public class CommunicationManager implements Runnable {
 	
 	synchronized public void addPacketToReceived(Packet p) {
 		this.receivedQueue.add(p);
+	}
+	
+	public void finish() {
+		done = true;
+		this.listenerMC.toggleFinished();
+		this.listenerMDB.toggleFinished();
+		this.listenerMDR.toggleFinished();
 	}
 }

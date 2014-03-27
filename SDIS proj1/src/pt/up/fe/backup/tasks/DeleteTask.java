@@ -6,8 +6,8 @@ import pt.up.fe.backup.FileManager;
 public class DeleteTask extends Task {
 	byte[] fileID;
 
-	public DeleteTask(FileManager fManager, CommunicationManager cManager, byte[] fileID) {
-		super(fManager, cManager);
+	public DeleteTask(FileManager fManager, byte[] fileID) {
+		super(fManager);
 		this.fileID = fileID;
 	}
 

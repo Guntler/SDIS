@@ -3,6 +3,8 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 
 public class SocketListener implements Runnable {
@@ -17,6 +19,12 @@ public class SocketListener implements Runnable {
 	
 	@Override
 	public void run() {
+		try {
+			socket.setSoTimeout(1000);
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
+		
 		while(!finished) {
 			byte[] buf = new byte[256];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -25,8 +33,12 @@ public class SocketListener implements Runnable {
 				byte[] data = packet.getData();
 				
 				String packetString = new String(data, StandardCharsets.ISO_8859_1);
+				System.out.println("Received the following packet: \n" + packetString);
 				manager.addPacketToReceived(new Packet(packetString));
-			} catch (IOException e) {e.printStackTrace();}
+			} catch(SocketTimeoutException e1) {
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -1,0 +1,2 @@
+allocatedmemory: 1073741824
+usedmemory: 0

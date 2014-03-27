@@ -1,7 +1,7 @@
 package pt.up.fe.backup;
 
 public class BackupChunk {
-	public static int maxSize = 65536;
+	public static int maxSize = 64000;
 	
 	private byte[] fileID;
 	private int chunkNo;

@@ -7,8 +7,8 @@ public class RestoreChunkTask extends Task {
 	byte[] fileID;
 	int chunkNo;
 
-	public RestoreChunkTask(FileManager fManager, CommunicationManager cManager, byte[] fileID, int chunkNo) {
-		super(fManager, cManager);
+	public RestoreChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
+		super(fManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}

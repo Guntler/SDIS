@@ -1,9 +1,6 @@
 package pt.up.fe.backup;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.DeleteTask;
 import pt.up.fe.backup.tasks.HandleRemoveTask;
@@ -27,11 +24,11 @@ public class TaskManager {
 	synchronized public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
 		switch(type) {
 		case BACKUPCHUNK:
-			return executor.submit(new BackUpChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
+			return executor.submit(new BackUpChunkTask(dbs.getFManager(), chunk));
 		case STORECHUNK:
-			return executor.submit(new StoreChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
+			return executor.submit(new StoreChunkTask(dbs.getFManager(), chunk));
 		case RECEIVECHUNK:
-			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), dbs.getCManager(), chunk));
+			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), chunk));
 		default:
 			return null;
 		}
@@ -40,15 +37,15 @@ public class TaskManager {
 	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
 		case SENDCHUNK:
-			return executor.submit(new SendChunkTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
+			return executor.submit(new SendChunkTask(dbs.getFManager(), fileID, chunkNo));
 		case UPDATESTORED:
-			return executor.submit(new UpdateStoredTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
+			return executor.submit(new UpdateStoredTask(dbs.getFManager(), fileID, chunkNo));
 		case HANDLE_REMOVE:
-			return executor.submit(new HandleRemoveTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
+			return executor.submit(new HandleRemoveTask(dbs.getFManager(), fileID, chunkNo));
 		case DELETE:
-			return executor.submit(new DeleteTask(dbs.getFManager(), dbs.getCManager(), fileID));
+			return executor.submit(new DeleteTask(dbs.getFManager(), fileID));
 		case RESTORECHUNK:
-			return executor.submit(new RestoreChunkTask(dbs.getFManager(), dbs.getCManager(), fileID, chunkNo));
+			return executor.submit(new RestoreChunkTask(dbs.getFManager(), fileID, chunkNo));
 		default:
 			return null;
 		}
@@ -56,22 +53,22 @@ public class TaskManager {
 	
 	synchronized public Future<?> executeTask(Packet packet) {
 		if(packet.packetType.equals("PUTCHUNK")) {
-			return executor.submit(new StoreChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
+			return executor.submit(new StoreChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
 		else if (packet.packetType.equals("GETCHUNK")) {
-			return executor.submit(new SendChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new SendChunkTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("DELETE")) {
-			return executor.submit(new DeleteTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID()));
+			return executor.submit(new DeleteTask(dbs.getFManager(), packet.getFileID()));
 		}
 		else if (packet.packetType.equals("REMOVED")) {
-			return executor.submit(new HandleRemoveTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("STORED")) {
-			return executor.submit(new UpdateStoredTask(dbs.getFManager(), dbs.getCManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new UpdateStoredTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("CHUNK")) {
-			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), dbs.getCManager(), packet.getChunk()));
+			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
 		return null;
 	}
@@ -81,5 +78,9 @@ public class TaskManager {
 			executor.messageActiveTasks(packet);
 		}
 		//complete this with other messages
+	}
+	
+	public void finish() {
+		executor.shutdownNow();
 	}
 }

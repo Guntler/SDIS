@@ -7,8 +7,8 @@ import pt.up.fe.backup.FileManager;
 public class ReceiveChunkTask extends Task {
 	BackupChunk chunk;
 
-	public ReceiveChunkTask(FileManager fManager, CommunicationManager cManager, BackupChunk chunk) {
-		super(fManager, cManager);
+	public ReceiveChunkTask(FileManager fManager, BackupChunk chunk) {
+		super(fManager);
 		this.chunk = chunk;
 	}
 

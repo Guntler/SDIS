@@ -105,8 +105,7 @@ public class FileManager {
 			return partialHash;
 
 		} catch(Exception e) {
-			System.err.println("Error reading file: " + e.toString());
-			e.printStackTrace();
+			System.out.println("Error reading file: " + e.toString());
 		}
 		return null;
 	}
@@ -120,7 +119,7 @@ public class FileManager {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
 				int bytesRead = 0;
-				int chunkCount = 0;
+				int chunkCount = 1;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree);
@@ -135,8 +134,7 @@ public class FileManager {
 				reader.close();
 
 			} catch(Exception e) {
-				System.err.println("Error reading file: " + e.toString());
-				e.printStackTrace();
+				System.out.println("Error reading file: " + e.toString());
 			}
 		}
 	}

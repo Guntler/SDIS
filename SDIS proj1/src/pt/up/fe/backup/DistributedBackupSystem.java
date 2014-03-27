@@ -3,14 +3,15 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DistributedBackupSystem {
-	private FileManager fManager;
-	private TaskManager tManager;
-	private CommunicationManager cManager;
+	static private FileManager fManager = null;
+	static private TaskManager tManager = null;
+	static public CommunicationManager cManager = null;
 	
 	protected static ArrayList<String> mcastArgs = new ArrayList<String>();
-	private static enum Menus {MAIN, BACKUP};
 	
 	/**
 	 * @param args	<IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR> 
@@ -23,66 +24,64 @@ public class DistributedBackupSystem {
 		}
 		for(int i=0;i<args.length;i++)
 			mcastArgs.add(args[i]);
-		
+
 		DistributedBackupSystem system = new DistributedBackupSystem();
 		system.start();
 	}
-	
+
 	public void start() throws IOException {
-		System.out.println("Starting system...");
-		System.out.println("Initializing managers...");
-		
-		System.out.println("Initializing task manager...");
 		tManager = new TaskManager(this);
-		
-		System.out.println("Initializing file manager...");
 		fManager = new FileManager(this);
-		
-		System.out.println("Initializing communication manager...");
 		cManager = new CommunicationManager(mcastArgs,this);
 		new Thread(cManager).start();
-		System.out.println("done...");
-		
+
 		boolean done = false;
-		Menus menu = Menus.MAIN;
 		Scanner console=new Scanner(System.in);
 		
+		System.out.print("\n\n\n\n");
+		System.out.println("DBS v.1.0.0");
+		System.out.println("Type 'help' for a list of commands.");
+		System.out.println("Type 'quit' to exit.");
+
 		while(!done) {
-			if(menu == Menus.MAIN) {
-				System.out.print("\n\n\n\n");
-				System.out.println("DBS v.1.0.0");
-				System.out.println("Main menu options:");
-				System.out.println("1. Backup file into system");
-				System.out.println("Type 'quit' to exit");
+
+			String input = console.nextLine();
+
+			if (input.equals("quit")) {
+				done = true;
+				cManager.finish();
+				tManager.finish();
+			}
+			else if(input.equals("help")) {
+				System.out.println("'backup \"filename\" repDegree' to backup a file.");
+				System.out.println("'quit' to exit the program.");
+			}
+			else {
 				
-				String input = console.nextLine();
 				
-				if(input.equals("1")) {
-					menu = Menus.BACKUP;
+				ArrayList<String> commands = new ArrayList<String>();
+				Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(input);
+				while (m.find())
+				    commands.add(m.group(1).replace("\"", "")); // Add .replace("\"", "") to remove surrounding quotes
+
+				if(commands.size() == 3 && commands.get(0).equals("backup")) {
+					try {
+						int repDeg = Integer.parseInt(commands.get(2));
+
+						System.out.println("Starting backup...");
+						fManager.backupFile(commands.get(1), repDeg);
+						System.out.println("done...");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				else if (input.equals("quit")) {
-					done = true;
+				else {
+					System.out.println("Unknown command. Type 'help' for a list of commands.");
 				}
 			}
-			else if (menu == Menus.BACKUP) {
-				System.out.print("Enter the filename: ");
-				
-				String name = console.nextLine();
-				
-				System.out.print("Enter desired replication degree: ");
-				
-				int repDeg = console.nextInt();
-				
-				System.out.println("Starting backup...");
-				fManager.backupFile(name, repDeg);
-				System.out.println("done...");
-				
-				menu = Menus.MAIN;
-			}
-			
-			
 		}
 	}
+
 	
 	public FileManager getFManager() {
 		return fManager;

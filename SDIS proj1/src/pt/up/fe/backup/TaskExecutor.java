@@ -21,7 +21,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	
 	@Override
 	protected void afterExecute(Runnable r, Throwable t) {
-		// TODO Auto-generated method stub
 		if(r instanceof Task)
 			activeTasks.remove((Task) r);
 		
@@ -30,7 +29,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
-		// TODO Auto-generated method stub
 		if(r instanceof Task)
 			activeTasks.add((Task) r);
 		
@@ -38,10 +36,13 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	}
 	
 	@Override
-	public <T> Future<T> submit(Runnable task, T result) {
-		if(task instanceof Task)
+	public Future<?> submit(Runnable task) {
+		if(task instanceof Task) {
+			return super.submit(task);
+		}
+		else {
 			return null;
-		return super.submit(task, result);
+		}
 	}
 
 	public void messageActiveTasks(Packet p) {

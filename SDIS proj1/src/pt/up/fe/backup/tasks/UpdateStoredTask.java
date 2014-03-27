@@ -7,8 +7,8 @@ public class UpdateStoredTask extends Task {
 	byte[] fileID;
 	int chunkNo;
 
-	public UpdateStoredTask(FileManager fManager, CommunicationManager cManager, byte[] fileID, int chunkNo) {
-		super(fManager, cManager);
+	public UpdateStoredTask(FileManager fManager, byte[] fileID, int chunkNo) {
+		super(fManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}

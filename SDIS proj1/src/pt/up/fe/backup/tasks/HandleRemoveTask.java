@@ -7,8 +7,8 @@ public class HandleRemoveTask extends Task {
 	byte[] fileID;
 	int chunkNo;
 
-	public HandleRemoveTask(FileManager fManager, CommunicationManager cManager, byte[] fileID, int chunkNo) {
-		super(fManager, cManager);
+	public HandleRemoveTask(FileManager fManager, byte[] fileID, int chunkNo) {
+		super(fManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}
