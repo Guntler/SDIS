@@ -113,11 +113,11 @@ public class Packet {
 		if(replicationDeg != 0)
 			msgArgs.add(Integer.toString(replicationDeg));
 	
-		msgArgs.add(new String(new byte[] {0xA}));
-		msgArgs.add(new String(new byte[] {0xD}));
+		//msgArgs.add(new String(new byte[] {0xA}));
+		//msgArgs.add(new String(new byte[] {0xD}));
+		msgArgs.add(new String("\\r\\n"));
 		if(!packetType.equals("DELETE")) {
-			msgArgs.add(new String(new byte[] {0xA}));
-			msgArgs.add(new String(new byte[] {0xD}));
+			msgArgs.add(new String("\\r\\n"));
 		}
 		if(!data.equals(null)) {
 			String str = new String(data,StandardCharsets.ISO_8859_1);
@@ -146,10 +146,6 @@ public class Packet {
 	}
 	
 	public void parseMessage(String msg) {
-		String cr = new String(new byte[] {0xA});
-		String lf = new String(new byte[] {0xD});
-		String crlf = cr+lf;
-		
 		if(msg.contains("PUTCHUNK")) {
 			String[] packOptions = msg.split(" ");
 			String version = packOptions[1];
@@ -166,73 +162,52 @@ public class Packet {
 			this.data = body.getBytes();
 		}
 		else if(msg.contains("CHUNK")) {
-			String subMsg = msg.substring("CHUNK".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String version = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String chunkNo = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(crlf);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(crlf);
-			subMsg = subMsg.substring(nextSpace+1);
-			String body = subMsg.substring(0,nextSpace);
-			this.version = version;
+			String[] packOptions = msg.split(" ");
+			String version = packOptions[1];
+			String fileID = packOptions[2];
+			String chunkNo = packOptions[3].split("\\r?\\n")[0];
+			String body = packOptions[3].split("\\r?\\n")[2];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.version = version;
+			this.packetType = "CHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
-			try {this.data = body.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.data = body.getBytes();
 		}
 		else if(msg.contains("GETCHUNK")) {
-			String subMsg = msg.substring("GETCHUNK".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String version = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String chunkNo = subMsg.substring(0,nextSpace);
-			this.version = version;
+			String[] packOptions = msg.split(" ");
+			String version = packOptions[1];
+			String fileID = packOptions[2];
+			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.version = version;
+			this.packetType = "GETCHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("REMOVED")) {
-			String subMsg = msg.substring("REMOVED".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String version = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String chunkNo = subMsg.substring(0,nextSpace);
-			this.version = version;
+			String[] packOptions = msg.split(" ");
+			String version = packOptions[1];
+			String fileID = packOptions[2];
+			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.version = version;
+			this.packetType = "REMOVED";
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("STORED")) {
-			String subMsg = msg.substring("STORED".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String version = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
-			subMsg = subMsg.substring(nextSpace+1);
-			nextSpace = subMsg.indexOf(' ');
-			String chunkNo = subMsg.substring(0,nextSpace);
-			this.version = version;
+			String[] packOptions = msg.split(" ");
+			String version = packOptions[1];
+			String fileID = packOptions[2];
+			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.version = version;
+			this.packetType = "STORED";
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("DELETE")) {
-			String subMsg = msg.substring("DELETE".length());
-			int nextSpace = subMsg.indexOf(' ');
-			String fileID = subMsg.substring(0,nextSpace);
+			String[] packOptions = msg.split(" ");
+			String fileID = packOptions[1].split("\\r?\\n")[0];
 			try {this.fileID = fileID.getBytes("ISO-8859-1");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.packetType = "DELETE";
 		}
 	}
 
