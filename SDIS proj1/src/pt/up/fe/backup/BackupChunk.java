@@ -15,7 +15,7 @@ public class BackupChunk {
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 		this.data = data;
-		this.setFilename(filename);
+		this.filename = filename;
 		this.size = size;
 		this.curReplicationDegree = 0;
 		this.wantedReplicationDegree = replicationDegree;

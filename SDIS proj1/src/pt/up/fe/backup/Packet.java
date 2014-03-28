@@ -15,7 +15,7 @@ public class Packet {
 	protected int chunkNo;
 	protected int replicationDeg;
 	protected String version;
-	protected byte[] data;
+	protected byte[] data = null;
 	
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
@@ -100,7 +100,7 @@ public class Packet {
 	}
 
 	public void sendPacket(DBSsocket socket) throws IOException {
-		byte[] buf = new byte[256];
+		byte[] buf = null;
 		String msg = new String();
 		msgArgs.add(packetType);
 		if(!version.equals(null))
@@ -121,19 +121,24 @@ public class Packet {
 
 		msg += new String(new byte[] {0xA});
 		msg += new String(new byte[] {0xD});
+		msg += new String(new byte[] {0xA});
+		msg += new String(new byte[] {0xD});
 		
-		if(!packetType.equals("DELETE")) {
-			msg += new String(new byte[] {0xA});
-			msg += new String(new byte[] {0xD});
+		if(data != null) {
+			msg += new String(data,StandardCharsets.ISO_8859_1);
+			//buf = new byte[msg.length() + data.length];
 		}
-		
-		//if(data.length != 0)
-			//msg += bytesToHex(data);
+		else
+		{
+			//buf = new byte[msg.length()];
+		}
+			
 		
 		System.out.println("Sending packet: " + msg);
 		buf = msg.getBytes();
 		
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getMcastGroup(),socket.getLocalPort());
+		
 		
 		socket.send(packet);
 	}
