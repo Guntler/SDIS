@@ -77,7 +77,6 @@ public class CommunicationManager implements Runnable {
 	
 	synchronized public void addPacketToReceived(Packet p) {
 		this.receivedQueue.add(p);
-		System.out.println(Packet.bytesToHex(p.getFileID()));
 	}
 	
 	public void finish() {

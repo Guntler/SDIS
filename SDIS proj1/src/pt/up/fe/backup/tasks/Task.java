@@ -16,7 +16,6 @@ public abstract class Task implements Runnable {
 	
 	public synchronized void sendMessage(Packet p) {
 		messages.add(p);
-		System.out.println("Received message, queue size is " + messages.size());
 	}
 	
 	public abstract void run();
