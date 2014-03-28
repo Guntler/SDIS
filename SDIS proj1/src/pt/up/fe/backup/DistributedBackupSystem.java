@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class DistributedBackupSystem {
 	static public FileManager fManager = null;
-	static private TaskManager tManager = null;
+	static public TaskManager tManager = null;
 	static public CommunicationManager cManager = null;
 	
 	protected static ArrayList<String> mcastArgs = new ArrayList<String>();

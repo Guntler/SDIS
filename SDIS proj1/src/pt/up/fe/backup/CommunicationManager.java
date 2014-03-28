@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import pt.up.fe.backup.tasks.test;
+
 public class CommunicationManager implements Runnable {
 	static public enum CommandTypes {GETCHUNK, PUTCHUNK, RESTORE, REMOVED, STORED, CHUNK, DELETE};
 	static public enum Channels {MC, MDB, MDR};
@@ -27,8 +29,11 @@ public class CommunicationManager implements Runnable {
 		final int mBackupPort = Integer.parseInt(this.mcastArgs.get(3));
 		final int mRecoverPort = Integer.parseInt(this.mcastArgs.get(5));
 		socketMC = new DBSsocket(mCastPort);
+		//socketMC.setLoopbackMode(true);
 		socketMDB = new DBSsocket(mBackupPort);
+		socketMDB.setLoopbackMode(true);
 		socketMDR = new DBSsocket(mRecoverPort);
+		socketMDR.setLoopbackMode(true);
 		InetAddress groupMC = InetAddress.getByName(this.mcastArgs.get(0));
 		InetAddress groupMDB = InetAddress.getByName(this.mcastArgs.get(2));
 		InetAddress groupMDR = InetAddress.getByName(this.mcastArgs.get(4));
@@ -52,8 +57,11 @@ public class CommunicationManager implements Runnable {
 
 		while(!done) {
 			if(receivedQueue.size() != 0) {
+				//System.out.print("I received a packet!");
+				//DistributedBackupSystem.tManager.executor.execute(new test(DistributedBackupSystem.fManager, "wtf"));
+				//System.out.println(receivedQueue.get(0).getPacketType());
 				synchronized(this) {
-					dbs.getTManager().executeTask(receivedQueue.get(0));
+					DistributedBackupSystem.tManager.handlePacket(receivedQueue.get(0));
 					receivedQueue.remove(0);
 				}
 			}
@@ -74,6 +82,7 @@ public class CommunicationManager implements Runnable {
 	
 	synchronized public void addPacketToReceived(Packet p) {
 		this.receivedQueue.add(p);
+		System.out.println(Packet.bytesToHex(p.getFileID()));
 	}
 	
 	public void finish() {

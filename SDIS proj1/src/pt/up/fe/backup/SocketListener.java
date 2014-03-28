@@ -35,6 +35,7 @@ public class SocketListener implements Runnable {
 				//Problem with parsing may derive from this, because the header isn't codified, but becomes it
 				String packetString = new String(data, StandardCharsets.ISO_8859_1);
 				System.out.println("Received the following packet: \n" + packetString);
+				System.out.println(Packet.bytesToHex(new Packet(packetString).getFileID()));
 				manager.addPacketToReceived(new Packet(packetString));
 			} catch(SocketTimeoutException e1) {
 			} catch (IOException e) {

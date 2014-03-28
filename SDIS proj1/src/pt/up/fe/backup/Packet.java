@@ -3,7 +3,6 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
@@ -119,23 +118,28 @@ public class Packet {
 			msg += msgArgs.get(i);
 		}
 
-		msg += new String(new byte[] {0xA});
+		/*msg += new String(new byte[] {0xA});
 		msg += new String(new byte[] {0xD});
 		msg += new String(new byte[] {0xA});
-		msg += new String(new byte[] {0xD});
+		msg += new String(new byte[] {0xD});*/
+		
+		msg += "\r\n\r\n";
 		
 		if(data != null) {
-			msg += new String(data,StandardCharsets.ISO_8859_1);
-			//buf = new byte[msg.length() + data.length];
+			//msg += new String(data,StandardCharsets.ISO_8859_1);
+			buf = new byte[msg.length() + data.length];
+			System.arraycopy(msg.getBytes(), 0, buf, 0, msg.length());
+			System.arraycopy(data, 0, buf, msg.length(), data.length);
 		}
 		else
 		{
-			//buf = new byte[msg.length()];
+			buf = new byte[msg.length()];
+			System.arraycopy(msg.getBytes(), 0, buf, 0, msg.length());
 		}
 			
 		
 		System.out.println("Sending packet: " + msg);
-		buf = msg.getBytes();
+		//buf = msg.getBytes();
 		
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getMcastGroup(),socket.getLocalPort());
 		
@@ -203,7 +207,9 @@ public class Packet {
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.fileID = Packet.hexToByte(fileID);
+			System.out.println(fileID);
+			System.out.println(Packet.bytesToHex(this.fileID));
 			this.version = version;
 			this.packetType = "STORED";
 			this.chunkNo = Integer.parseInt(chunkNo);

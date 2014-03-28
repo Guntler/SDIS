@@ -32,19 +32,26 @@ public class BackUpChunkTask extends Task {
 				} catch (InterruptedException e) {e.printStackTrace();}
 
 				for(Packet p : messages) {
-					if(p.getPacketType().equals("STORED") && p.getFileID().equals(chunk.getFileID()) && p.getChunkNo() == chunk.getChunkNo()) {
+					System.out.println(p.getPacketType() + " Comparing: " + Packet.bytesToHex(p.getFileID()) + " with: " + Packet.bytesToHex(chunk.getFileID()) + " and: " + p.getChunkNo() + " with: " + chunk.getChunkNo());
+					if(p.getPacketType().equals("STORED") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(chunk.getFileID())) && p.getChunkNo() == chunk.getChunkNo()) {
 						storedCount++;
+						System.out.println("this should work");
 					}
 				}
 				
 				if(storedCount >= chunk.getWantedReplicationDegree()) {
+					System.out.println("Chunk was successfully stored with required replication degree");
 					done = true;
 					//write info to log
 				}
-				else if (waitTime < 10000)
+				else if (waitTime < 8000) {
+					System.out.println("Timeout: did not receive enough STORED replies");
 					waitTime += waitTime;
-				else
+				}
+				else {
+					System.out.println("Chunk was not successfully stored");
 					done = true;
+				}
 			} while (!done);
 		} catch (IOException e) {e.printStackTrace();}
 	}
