@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-import pt.up.fe.backup.tasks.test;
-
 public class CommunicationManager implements Runnable {
 	static public enum CommandTypes {GETCHUNK, PUTCHUNK, RESTORE, REMOVED, STORED, CHUNK, DELETE};
 	static public enum Channels {MC, MDB, MDR};
@@ -57,9 +55,6 @@ public class CommunicationManager implements Runnable {
 
 		while(!done) {
 			if(receivedQueue.size() != 0) {
-				//System.out.print("I received a packet!");
-				//DistributedBackupSystem.tManager.executor.execute(new test(DistributedBackupSystem.fManager, "wtf"));
-				//System.out.println(receivedQueue.get(0).getPacketType());
 				synchronized(this) {
 					DistributedBackupSystem.tManager.handlePacket(receivedQueue.get(0));
 					receivedQueue.remove(0);

@@ -24,7 +24,7 @@ public class RestoreChunkTask extends Task {
 		int waitTime = 500;
 
 		try {
-			Packet pack = new Packet("GETCHUNK", "1.0.0", fileID, chunkNo, 0, null);
+			Packet pack = new Packet("GETCHUNK", "1.0", fileID, chunkNo, 0, null);
 			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 
 			do {

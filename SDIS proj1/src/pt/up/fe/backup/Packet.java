@@ -1,7 +1,6 @@
 package pt.up.fe.backup;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 
@@ -171,35 +170,35 @@ public class Packet {
 			this.data = body.getBytes();
 		}
 		else if(msg.contains("CHUNK")) {
+			this.packetType = "CHUNK";
 			String[] packOptions = msg.split(" ");
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			String body = packOptions[3].split("\\r?\\n")[2];
-			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.fileID = hexToByte(fileID);
 			this.version = version;
-			this.packetType = "CHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.data = body.getBytes();
 		}
 		else if(msg.contains("GETCHUNK")) {
+			this.packetType = "GETCHUNK";
 			String[] packOptions = msg.split(" ");
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.fileID = hexToByte(fileID);
 			this.version = version;
-			this.packetType = "GETCHUNK";
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("REMOVED")) {
+			this.packetType = "REMOVED";
 			String[] packOptions = msg.split(" ");
 			String version = packOptions[1];
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("UTF_8");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			this.fileID = hexToByte(fileID);
 			this.version = version;
-			this.packetType = "REMOVED";
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("STORED")) {
@@ -215,10 +214,10 @@ public class Packet {
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("DELETE")) {
+			this.packetType = "DELETE";
 			String[] packOptions = msg.split(" ");
 			String fileID = packOptions[1].split("\\r?\\n")[0];
-			try {this.fileID = fileID.getBytes("US-ASCII");} catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
-			this.packetType = "DELETE";
+			this.fileID = hexToByte(fileID);
 		}
 	}
 

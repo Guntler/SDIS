@@ -35,7 +35,7 @@ public class SendChunkTask extends Task {
 				}
 				
 				if(!done) {
-					Packet pack = new Packet("CHUNK", "1.0.0", fileID, chunkNo, 0, body);
+					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, body);
 					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDR);
 					//write info to log
 				}

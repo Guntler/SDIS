@@ -2,7 +2,6 @@ package pt.up.fe.backup.tasks;
 
 import java.util.ArrayList;
 
-import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 

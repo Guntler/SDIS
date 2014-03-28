@@ -24,7 +24,7 @@ public class StoreChunkTask extends Task {
 		if(result) {
 			System.out.println("Result is true");
 			try {
-				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
+				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
 				//write info to log
 			} catch (IOException e) {e.printStackTrace();}
 		}

@@ -22,7 +22,7 @@ public class BackUpChunkTask extends Task {
 		int waitTime = 500;
 
 		try {
-			Packet pack = new Packet("PUTCHUNK", "1.0.0", chunk);
+			Packet pack = new Packet("PUTCHUNK", "1.0", chunk);
 			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDB);
 
 			do {

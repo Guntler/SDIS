@@ -24,7 +24,7 @@ public class HandleRemoveTask extends Task {
 		
 		if(result) {
 			try {
-				Packet pack = new Packet("REMOVED", "1.0.0", fileID, chunkNo, 0, null);
+				Packet pack = new Packet("REMOVED", "1.0", fileID, chunkNo, 0, null);
 				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 				//write info to log
 			} catch (IOException e) {e.printStackTrace();}
