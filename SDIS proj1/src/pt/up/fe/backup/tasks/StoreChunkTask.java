@@ -22,14 +22,11 @@ public class StoreChunkTask extends Task {
 		boolean result = DistributedBackupSystem.fManager.saveChunk(chunk);
 		
 		if(result) {
-			System.out.println("Result is true");
 			try {
 				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
 				//write info to log
 			} catch (IOException e) {e.printStackTrace();}
 		}
-		
-		System.out.println("Result is false");
 	}
 
 }

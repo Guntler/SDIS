@@ -82,7 +82,6 @@ public class TaskManager {
 	
 	public void handlePacket(Packet packet) {
 		if(packet.packetType.equals("STORED")) {
-			System.out.println("Messaging tasks with ID ");
 			executor.messageActiveTasks(packet);
 		}
 		else executeTask(packet);

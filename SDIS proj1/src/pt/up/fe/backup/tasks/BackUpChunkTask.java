@@ -32,10 +32,9 @@ public class BackUpChunkTask extends Task {
 				} catch (InterruptedException e) {e.printStackTrace();}
 
 				for(Packet p : messages) {
-					System.out.println(p.getPacketType() + " Comparing: " + Packet.bytesToHex(p.getFileID()) + " with: " + Packet.bytesToHex(chunk.getFileID()) + " and: " + p.getChunkNo() + " with: " + chunk.getChunkNo());
+					//System.out.println(p.getPacketType() + " Comparing: " + Packet.bytesToHex(p.getFileID()) + " with: " + Packet.bytesToHex(chunk.getFileID()) + " and: " + p.getChunkNo() + " with: " + chunk.getChunkNo());
 					if(p.getPacketType().equals("STORED") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(chunk.getFileID())) && p.getChunkNo() == chunk.getChunkNo()) {
 						storedCount++;
-						System.out.println("this should work");
 					}
 				}
 				

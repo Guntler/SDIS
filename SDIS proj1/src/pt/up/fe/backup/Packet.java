@@ -116,16 +116,10 @@ public class Packet {
 			msg += " ";
 			msg += msgArgs.get(i);
 		}
-
-		/*msg += new String(new byte[] {0xA});
-		msg += new String(new byte[] {0xD});
-		msg += new String(new byte[] {0xA});
-		msg += new String(new byte[] {0xD});*/
 		
 		msg += "\r\n\r\n";
 		
 		if(data != null) {
-			//msg += new String(data,StandardCharsets.ISO_8859_1);
 			buf = new byte[msg.length() + data.length];
 			System.arraycopy(msg.getBytes(), 0, buf, 0, msg.length());
 			System.arraycopy(data, 0, buf, msg.length(), data.length);
@@ -207,8 +201,6 @@ public class Packet {
 			String fileID = packOptions[2];
 			String chunkNo = packOptions[3].split("\\r?\\n")[0];
 			this.fileID = Packet.hexToByte(fileID);
-			System.out.println(fileID);
-			System.out.println(Packet.bytesToHex(this.fileID));
 			this.version = version;
 			this.packetType = "STORED";
 			this.chunkNo = Integer.parseInt(chunkNo);

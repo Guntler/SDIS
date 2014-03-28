@@ -142,10 +142,8 @@ public class FileManager {
 	public boolean saveChunk(BackupChunk c) {
 		
 		for(BackupChunk chunk : backedUpChunks) {
-			String recID = Packet.bytesToHex(c.getFileID());
-			String comID = Packet.bytesToHex(chunk.getFileID());
-			//System.out.println("Received ID is: " + recID);
-			//System.out.println("Comparing with: " + comID);
+			String recID = Packet.bytesToHex(c.getFileID()).toUpperCase();
+			String comID = Packet.bytesToHex(chunk.getFileID()).toUpperCase();
 			if(comID.equals(recID) && chunk.getChunkNo() == c.getChunkNo()) {
 				return false;
 			}

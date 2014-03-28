@@ -32,7 +32,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	protected void afterExecute(Runnable r, Throwable t) {
 		if(r instanceof TaskFuture) {
 			activeTasks.remove(((TaskFuture) r).getTask());
-			//System.out.println("Removed task from active tasks, active tasks size is now " + activeTasks.size());
 		}
 		
 		super.afterExecute(r, t);
@@ -42,10 +41,7 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	protected void beforeExecute(Thread t, Runnable r) {
 		if(r instanceof TaskFuture) {
 			activeTasks.add(((TaskFuture) r).getTask());
-			//System.out.println("Added task to active tasks, active tasks size is now " + activeTasks.size());
 		}
-		else
-			//System.out.println("Class is not instance of class it's " + r.getClass().getName() + " extended from " + r.getClass().getSuperclass());
 		
 		super.beforeExecute(t, r);
 	}
@@ -61,8 +57,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	}
 
 	public void messageActiveTasks(Packet p) {
-		//System.out.println(" with ID " + Packet.bytesToHex(p.getFileID()));
-		//System.out.println("Number of active tasks is " + activeTasks.size());
 		for(Task task : activeTasks) {
 			task.sendMessage(p);
 		}
