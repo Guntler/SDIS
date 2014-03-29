@@ -11,10 +11,9 @@ import pt.up.fe.backup.tasks.ReceiveChunkTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
-import pt.up.fe.backup.tasks.UpdateStoredTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
