@@ -240,7 +240,7 @@ public class FileManager {
 	
 	public returnTypes deleteFile(byte[] fileID) {
 		String recID = Packet.bytesToHex(fileID);
-		BackupFile file = files.remove(fileID);
+		boolean file = files.remove(fileID);
 		
 		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
