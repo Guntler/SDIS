@@ -19,14 +19,14 @@ public class FileManager {
 	public enum returnTypes {
 	    SUCCESS, FILE_EXISTS, FILE_DOES_NOT_EXIST, FAILURE
 	}
-	private HashMap<byte[],BackupFile> files;
+	private ArrayList<BackupFile> files;
 	private ArrayList<BackupChunk> backedUpChunks;
 	private long maxSize, currSize;
 	private DistributedBackupSystem dbs;
 	private int nextAvailableFileNo;
 	
 	public FileManager(DistributedBackupSystem dbs) {
-		files = new HashMap<byte[],BackupFile>();
+		files = new ArrayList<BackupFile>();
 		backedUpChunks = new ArrayList<BackupChunk>();
 		this.dbs = dbs;
 		this.nextAvailableFileNo = 0;
@@ -62,7 +62,7 @@ public class FileManager {
 			    		int numChunks = Integer.parseInt(parts[4]);
 			    		
 			    		
-			    		files.put(hash, new BackupFile(hash, parts[2], repDegree, numChunks));
+			    		files.add(new BackupFile(hash, parts[2], repDegree, numChunks));
 			    	}
 			    	else if (parts[0].equals("chunk:") && parts.length == 4) {
 			    		byte[] hash = Packet.hexToByte(parts[1]);
@@ -131,7 +131,7 @@ public class FileManager {
 				}
 				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
-				files.put(fileHash, newFile);
+				files.add(newFile);
 
 				reader.close();
 
@@ -225,5 +225,15 @@ public class FileManager {
 
 	public void setCurrSize(long currSize) {
 		this.currSize = currSize;
+	}
+	
+	public BackupFile getFileByName(String name) {
+		for(BackupFile file : files) {
+			if(file.getFilename().equals(name)) {
+				return file;
+			}
+		}
+		
+		return null;
 	}
 }

@@ -11,7 +11,7 @@ import pt.up.fe.backup.tasks.StoreChunkTask;
 import pt.up.fe.backup.tasks.UpdateStoredTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETE, RESTORECHUNK};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
@@ -45,8 +45,6 @@ public class TaskManager {
 	
 	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
-		case UPDATESTORED:
-			return executor.submit(new UpdateStoredTask(dbs.getFManager(), fileID, chunkNo));
 		case HANDLE_REMOVE:
 			return executor.submit(new HandleRemoveTask(dbs.getFManager(), fileID, chunkNo));
 		case DELETE:
@@ -73,9 +71,6 @@ public class TaskManager {
 		else if (packet.packetType.equals("REMOVED")) {
 			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
 		}
-		else if (packet.packetType.equals("STORED")) {
-			return executor.submit(new UpdateStoredTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
-		}
 		else if (packet.packetType.equals("CHUNK")) {
 			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
@@ -92,5 +87,9 @@ public class TaskManager {
 	
 	public void finish() {
 		executor.shutdownNow();
+	}
+	
+	public void sendMessageToActiveTasks(Packet p) {
+		executor.messageActiveTasks(p);
 	}
 }
