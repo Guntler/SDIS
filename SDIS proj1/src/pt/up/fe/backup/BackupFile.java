@@ -23,4 +23,8 @@ public class BackupFile {
 	public byte[] getFileID() {
 		return fileID;
 	}
+
+	public int getReplicationDegree() {
+		return replicationDegree;
+	}
 }

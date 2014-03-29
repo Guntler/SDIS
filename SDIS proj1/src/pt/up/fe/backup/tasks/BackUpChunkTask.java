@@ -41,7 +41,6 @@ public class BackUpChunkTask extends Task {
 				if(storedCount >= chunk.getWantedReplicationDegree()) {
 					System.out.println("Chunk was successfully stored with required replication degree");
 					done = true;
-					//write info to log
 				}
 				else if (waitTime < 8000) {
 					System.out.println("Timeout: did not receive enough STORED replies");

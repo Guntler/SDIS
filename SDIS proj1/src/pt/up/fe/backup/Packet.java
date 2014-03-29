@@ -214,6 +214,6 @@ public class Packet {
 	}
 
 	public BackupChunk getChunk() {
-		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg);
+		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
 	}
 }

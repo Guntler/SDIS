@@ -2,13 +2,16 @@ package pt.up.fe.backup;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -64,12 +67,20 @@ public class FileManager {
 			    		
 			    		files.add(new BackupFile(hash, parts[2], repDegree, numChunks));
 			    	}
-			    	else if (parts[0].equals("chunk:") && parts.length == 4) {
+			    	else if (parts[0].equals("chunk:") && parts.length >= 6) {
 			    		byte[] hash = Packet.hexToByte(parts[1]);
-			    		int chunkNo = Integer.parseInt(parts[2]);
-			    		int repDegree = Integer.parseInt(parts[3]);
+			    		int chunkNo = Integer.parseInt(parts[3]);
+			    		int repDegree = Integer.parseInt(parts[4]);
+			    		int curRepDeg = Integer.parseInt(parts[5]);
+			    		int size = Integer.parseInt(parts[6]);
 			    		
-			    		backedUpChunks.add(new BackupChunk(hash, chunkNo, null, null, 0, repDegree));
+			    		ArrayList<InetAddress> stored = new ArrayList<InetAddress>();
+			    		
+			    		for(int i = 7; i < parts.length; i++) {
+			    			stored.add(InetAddress.getByName(parts[i]));
+			    		}
+			    		
+			    		backedUpChunks.add(new BackupChunk(hash, chunkNo, null, parts[2], size, repDegree, curRepDeg, stored));
 			    	}
 			    	
 			    }
@@ -102,8 +113,6 @@ public class FileManager {
 			partialHash = new byte[hashSum.getDigestLength()];
 			partialHash = hashSum.digest();
 			
-			//BigInteger hash = new BigInteger(1,partialHash);
-			
 			return partialHash;
 
 		} catch(Exception e) {
@@ -112,7 +121,7 @@ public class FileManager {
 		return null;
 	}
 
-	public void backupFile(String filename, int replicationDegree) {
+	synchronized public void backupFile(String filename, int replicationDegree) {
 		BackupFile newFile = null;
 		byte[] fileHash = computeFileHash(filename);
 		
@@ -124,16 +133,28 @@ public class FileManager {
 				int chunkCount = 0;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
-					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree);
+					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
 					
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				
+				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);
+				
+				String data = "file: " + Packet.bytesToHex(newFile.getFileID()) + " " + newFile.getFilename() + " " + newFile.getReplicationDegree() + " " + chunkCount;
 
-				reader.close();
+				File file =new File("log.txt");
+
+				if(!file.exists()){
+					file.createNewFile();
+				}
+
+				FileWriter fileWritter = new FileWriter(file.getName(),true);
+				BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+				bufferWritter.write(data);
+				bufferWritter.close();
 
 			} catch(Exception e) {
 				System.out.println("Error reading file: " + e.toString());
@@ -141,7 +162,7 @@ public class FileManager {
 		}
 	}
 	
-	public returnTypes saveChunk(BackupChunk c) {
+	synchronized public returnTypes saveChunk(BackupChunk c) {
 		
 		for(BackupChunk chunk : backedUpChunks) {
 			String recID = Packet.bytesToHex(c.getFileID());
@@ -152,11 +173,8 @@ public class FileManager {
 		}
 		
 		String name = "";
-		
 		name += "chunk-";
 		name += this.nextAvailableFileNo;
-		name += "-";
-		name += c.getChunkNo();
 		
 		c.setFilename(name);
 		
@@ -168,6 +186,24 @@ public class FileManager {
 			out.write(c.getData());
 			out.close();
 			this.backedUpChunks.add(c);
+			
+			String data = "chunk: " + Packet.bytesToHex(c.getFileID()) + " " + name + " " + c.getChunkNo() + " " + c.getWantedReplicationDegree() + " " + 1 + " " + c.getSize();
+			
+			for(InetAddress addr : c.getStored()) {
+				data += " " + addr.getHostAddress();
+			}
+
+			File file =new File("log.txt");
+
+			if(!file.exists()){
+				file.createNewFile();
+			}
+
+			FileWriter fileWritter = new FileWriter(file.getName(),true);
+			BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+			bufferWritter.write(data);
+			bufferWritter.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return returnTypes.FAILURE;

@@ -56,7 +56,7 @@ public class CommunicationManager implements Runnable {
 		while(!done) {
 			if(receivedQueue.size() != 0) {
 				synchronized(this) {
-					DistributedBackupSystem.tManager.handlePacket(receivedQueue.get(0));
+					DistributedBackupSystem.tManager.executeTask(receivedQueue.get(0));
 					receivedQueue.remove(0);
 				}
 			}
