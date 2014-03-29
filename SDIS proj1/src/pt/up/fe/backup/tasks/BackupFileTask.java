@@ -1,20 +1,29 @@
 package pt.up.fe.backup.tasks;
 
+import pt.up.fe.backup.BackupFile;
+import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
+import pt.up.fe.backup.Packet;
+import pt.up.fe.backup.TaskManager;
 
 public class BackupFileTask extends Task{
-
-	public BackupFileTask(FileManager fManager) {
+	String filename;
+	int replicationDegree;
+	
+	public BackupFileTask(FileManager fManager, String filename, int replicationDegree) {
 		super(fManager);
-		// TODO Auto-generated constructor stub
+		this.filename = filename;
+		this.replicationDegree = replicationDegree;
 	}
 
 	@Override
 	public void run() {
-		//fManager.backupFile(filename, replicationDegree);
-		//fmanager.backupfile
-		//ver mensagens
-		//chama delete task
+		DistributedBackupSystem.fManager.backupFile(filename, replicationDegree);
+		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
+		for(Packet p : messages) {
+			if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
+				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0);
+		}
 		
 		
 	}

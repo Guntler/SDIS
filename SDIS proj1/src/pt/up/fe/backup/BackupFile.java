@@ -15,4 +15,12 @@ public class BackupFile {
 		this.replicationDegree = replicationDegree;
 		this.chunkNum = chunkNum;
 	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public byte[] getFileID() {
+		return fileID;
+	}
 }

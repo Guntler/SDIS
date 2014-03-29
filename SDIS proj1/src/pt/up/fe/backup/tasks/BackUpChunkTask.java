@@ -7,6 +7,7 @@ import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
+import pt.up.fe.backup.TaskManager;
 
 public class BackUpChunkTask extends Task {
 	BackupChunk chunk;
@@ -32,7 +33,6 @@ public class BackUpChunkTask extends Task {
 				} catch (InterruptedException e) {e.printStackTrace();}
 
 				for(Packet p : messages) {
-					//System.out.println(p.getPacketType() + " Comparing: " + Packet.bytesToHex(p.getFileID()) + " with: " + Packet.bytesToHex(chunk.getFileID()) + " and: " + p.getChunkNo() + " with: " + chunk.getChunkNo());
 					if(p.getPacketType().equals("STORED") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(chunk.getFileID())) && p.getChunkNo() == chunk.getChunkNo()) {
 						storedCount++;
 					}
@@ -49,8 +49,11 @@ public class BackUpChunkTask extends Task {
 				}
 				else {
 					System.out.println("Chunk was not successfully stored");
+					DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("DELETE", "1.0", chunk.getFileID(), 0, 0, null));
 					done = true;
 				}
+				
+				messages.clear();
 			} while (!done);
 		} catch (IOException e) {e.printStackTrace();}
 	}
