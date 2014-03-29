@@ -14,8 +14,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> RunnableFuture<T> newTaskFor(Runnable arg0, T arg1) {
-		// TODO Auto-generated method stub
-		//return super.newTaskFor(arg0, arg1)
 		return (RunnableFuture<T>) new TaskFuture (arg0, arg1);
 	}
 
