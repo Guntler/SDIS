@@ -13,7 +13,7 @@ public class ReceiveChunkTask extends Task {
 
 	@Override
 	public void run() {
-		boolean result = fManager.saveChunk(chunk);
+		FileManager.returnTypes result = fManager.saveChunk(chunk);
 		
 	}
 

@@ -7,6 +7,11 @@ import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
+/**
+ * Issues a DELETE packet to its peers.
+ * @author pbpdi_000
+ *
+ */
 public class DeleteTask extends Task {
 	byte[] fileID;
 

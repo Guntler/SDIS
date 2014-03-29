@@ -16,7 +16,9 @@ import java.util.HashMap;
 
 public class FileManager {
 	public static int bytesToRead = 1048576;
-	
+	public enum returnTypes {
+	    SUCCESS, FILE_EXISTS, FILE_DOES_NOT_EXIST, FAILURE
+	}
 	private HashMap<byte[],BackupFile> files;
 	private ArrayList<BackupChunk> backedUpChunks;
 	private long maxSize, currSize;
@@ -139,13 +141,13 @@ public class FileManager {
 		}
 	}
 	
-	public boolean saveChunk(BackupChunk c) {
+	public returnTypes saveChunk(BackupChunk c) {
 		
 		for(BackupChunk chunk : backedUpChunks) {
 			String recID = Packet.bytesToHex(c.getFileID());
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == c.getChunkNo()) {
-				return false;
+				return returnTypes.FILE_EXISTS;
 			}
 		}
 		
@@ -168,11 +170,11 @@ public class FileManager {
 			this.backedUpChunks.add(c);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return returnTypes.FAILURE;
 		}
 		
 		nextAvailableFileNo++;
-		return true;
+		return returnTypes.SUCCESS;
 	}
 
 	/**
@@ -181,22 +183,32 @@ public class FileManager {
 	 * @param fileID
 	 * @return
 	 */
-	public boolean deleteChunk(byte[] fileID) {
-		boolean found = false;
+	public returnTypes deleteChunk(byte[] fileID, int chunkNo) {
 		
 		for(BackupChunk chunk : backedUpChunks) {
-			if(chunk.getFileID().equals(fileID)) {
-				found=true;
+			String recID = Packet.bytesToHex(fileID);
+			String comID = Packet.bytesToHex(chunk.getFileID());
+			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
+				backedUpChunks.remove(chunk);
+				//remove from file system necessary
+				return returnTypes.SUCCESS;
 			}
 		}
-		
-		if(found) {
-			return true;
+
+		return returnTypes.FILE_DOES_NOT_EXIST;
+	}
+	
+	public returnTypes deleteFile(byte[] fileID) {
+		for(BackupChunk chunk : backedUpChunks) {
+			String recID = Packet.bytesToHex(fileID);
+			String comID = Packet.bytesToHex(chunk.getFileID());
+			if(comID.equals(recID)) {
+				
+				
+				return returnTypes.SUCCESS;
+			}
 		}
-		else
-		{
-			return false;
-		}
+		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
 	
 	public long getMaxSize() {
