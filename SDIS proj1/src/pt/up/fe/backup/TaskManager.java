@@ -1,8 +1,10 @@
 package pt.up.fe.backup;
 
 import java.util.concurrent.Future;
+
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.DeleteTask;
+import pt.up.fe.backup.tasks.HandleDeleteTask;
 import pt.up.fe.backup.tasks.HandleRemoveTask;
 import pt.up.fe.backup.tasks.ReceiveChunkTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
@@ -66,7 +68,7 @@ public class TaskManager {
 			return executor.submit(new SendChunkTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getData()));
 		}
 		else if (packet.packetType.equals("DELETE")) {
-			return executor.submit(new DeleteTask(dbs.getFManager(), packet.getFileID()));
+			return executor.submit(new HandleDeleteTask(dbs.getFManager(), packet.getFileID()));
 		}
 		//TODO
 		//IF A PUTCHUNK TASK IS TAKING PLACE, THIS SHOULD NOT RUN
@@ -83,7 +85,7 @@ public class TaskManager {
 	}
 	
 	public void handlePacket(Packet packet) {
-		if(packet.packetType.equals("STORED")) {
+		if(packet.packetType.equals("STORED") || packet.packetType.equals("CHUNK")) {
 			executor.messageActiveTasks(packet);
 		}
 		else executeTask(packet);

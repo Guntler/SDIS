@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,19 +180,57 @@ public class FileManager {
 	}
 
 	/**
+	 * Deletes all chunks that match with a fileID.
+	 * @param fileID
+	 * @return
+	 */
+	public returnTypes deleteAllChunks(byte[] fileID) {
+		for(BackupChunk chunk : backedUpChunks) {
+			String recID = Packet.bytesToHex(fileID);
+			String comID = Packet.bytesToHex(chunk.getFileID());
+			if(comID.equals(recID)) {
+				String filepath = "storage/";
+				filepath += chunk.getFilename();
+				
+				boolean success = (new File (filepath)).delete();
+				if (success) {
+					success = backedUpChunks.remove(chunk);
+					
+					if(success) {System.out.println("The file has been successfully deleted");}
+					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
+				}
+				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
+				
+				return returnTypes.SUCCESS;
+			}
+		}
+		
+		return returnTypes.FILE_DOES_NOT_EXIST;
+	}
+	
+	/**
 	 * Deletes Chunk from FileSystem.
 	 * Unfinished. TODO
 	 * @param fileID
 	 * @return
 	 */
 	public returnTypes deleteChunk(byte[] fileID, int chunkNo) {
-		
 		for(BackupChunk chunk : backedUpChunks) {
 			String recID = Packet.bytesToHex(fileID);
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
-				backedUpChunks.remove(chunk);
-				//remove from file system necessary
+				String filepath = "storage/";
+				filepath += chunk.getFilename();
+				
+				boolean success = (new File (filepath)).delete();
+				if (success) {
+					success = backedUpChunks.remove(chunk);
+					
+					if(success) {System.out.println("The file has been successfully deleted");}
+					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
+				}
+				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
+				
 				return returnTypes.SUCCESS;
 			}
 		}
@@ -199,15 +239,9 @@ public class FileManager {
 	}
 	
 	public returnTypes deleteFile(byte[] fileID) {
-		for(BackupChunk chunk : backedUpChunks) {
-			String recID = Packet.bytesToHex(fileID);
-			String comID = Packet.bytesToHex(chunk.getFileID());
-			if(comID.equals(recID)) {
-				
-				
-				return returnTypes.SUCCESS;
-			}
-		}
+		String recID = Packet.bytesToHex(fileID);
+		BackupFile file = files.remove(fileID);
+		
 		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
 	

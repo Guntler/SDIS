@@ -8,7 +8,7 @@ import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 /**
- * Issues a DELETE packet to its peers.
+ * Deletes all chunks related to this fileID, then issues a DELETE packet to its peers.
  * @author pbpdi_000
  *
  */
@@ -22,10 +22,14 @@ public class DeleteTask extends Task {
 
 	@Override
 	public void run() {
-		try {
-			Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
-			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
-			//write info to log
-		} catch (IOException e) {e.printStackTrace();}	
+		FileManager.returnTypes result = fManager.deleteAllChunks(fileID);
+		
+		if(result != FileManager.returnTypes.FAILURE) {
+			try {
+				Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
+				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
+				//write info to log
+			} catch (IOException e) {e.printStackTrace();}
+		}
 	}
 }

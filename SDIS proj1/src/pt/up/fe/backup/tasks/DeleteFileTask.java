@@ -24,10 +24,16 @@ public class DeleteFileTask extends Task {
 	public void run() {
 		FileManager.returnTypes result = fManager.deleteFile(fileID);
 		
-		try {
-			Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
-			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
-			//write info to log
-		} catch (IOException e) {e.printStackTrace();}	
+		if(result != FileManager.returnTypes.FAILURE) {
+			result = fManager.deleteAllChunks(fileID);
+			
+			if(result != FileManager.returnTypes.FAILURE) {
+				try {
+					Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
+					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
+					//write info to log
+				} catch (IOException e) {e.printStackTrace();}
+			}
+		}
 	}
 }

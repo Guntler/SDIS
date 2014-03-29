@@ -8,16 +8,16 @@ import pt.up.fe.backup.FileManager;
  *
  */
 public class HandleDeleteTask extends Task {
+	byte[] fileID;
 
 	public HandleDeleteTask(FileManager fManager, byte[] fileID) {
 		super(fManager);
-		// TODO Auto-generated constructor stub
+		this.fileID = fileID;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
+		FileManager.returnTypes result = fManager.deleteAllChunks(fileID);
 	}
 
 }

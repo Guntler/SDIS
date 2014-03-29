@@ -12,7 +12,6 @@ public class TaskFuture extends FutureTask<Object> implements RunnableFuture<Obj
 		super(arg0, arg1);
 		if(arg0 instanceof Task)
 			task = (Task) arg0;
-		// TODO Auto-generated constructor stub
 	}
 
 	public Task getTask() {
