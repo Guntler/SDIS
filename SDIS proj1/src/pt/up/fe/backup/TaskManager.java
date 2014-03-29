@@ -2,6 +2,7 @@ package pt.up.fe.backup;
 
 import java.util.concurrent.Future;
 import pt.up.fe.backup.tasks.BackUpChunkTask;
+import pt.up.fe.backup.tasks.BackupFileTask;
 import pt.up.fe.backup.tasks.DeleteTask;
 import pt.up.fe.backup.tasks.HandleRemoveTask;
 import pt.up.fe.backup.tasks.ReceiveChunkTask;
@@ -91,5 +92,14 @@ public class TaskManager {
 	
 	public void sendMessageToActiveTasks(Packet p) {
 		executor.messageActiveTasks(p);
+	}
+
+	public Future<?> executeTask(TaskTypes type, String name, int repDeg) {
+		if(type == TaskTypes.BACKUPFILE) {
+			return executor.submit(new BackupFileTask(null, name, repDeg));
+		}
+		else return null;
+			
+		
 	}
 }
