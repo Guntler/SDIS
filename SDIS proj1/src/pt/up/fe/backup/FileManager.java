@@ -231,6 +231,7 @@ public class FileManager {
 				
 				boolean success = (new File (filepath)).delete();
 				if (success) {
+					currSize -= chunk.getSize();
 					success = backedUpChunks.remove(chunk);
 					
 					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
@@ -279,6 +280,7 @@ public class FileManager {
 				
 				boolean success = (new File (filepath)).delete();
 				if (success) {
+					currSize -= chunk.getSize();
 					success = backedUpChunks.remove(chunk);
 					
 					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
