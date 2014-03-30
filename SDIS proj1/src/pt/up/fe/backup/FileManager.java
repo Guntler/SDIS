@@ -156,7 +156,7 @@ public class FileManager {
 		return null;
 	}
 
-	synchronized public void backupFile(String filename, int replicationDegree) {
+	public void backupFile(String filename, int replicationDegree) {
 		BackupFile newFile = null;
 		byte[] fileHash = computeFileHash(filename);
 		

@@ -21,7 +21,7 @@ public class TaskManager {
 	TaskExecutor executor = null;
 	
 	public TaskManager(DistributedBackupSystem dbs) {
-		executor = new TaskExecutor(5);
+		executor = new TaskExecutor(10);
 		this.dbs = dbs;
 	}
 	

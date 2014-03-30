@@ -23,4 +23,8 @@ public class HandleStoreTask extends Task implements Runnable {
 		DistributedBackupSystem.fManager.updateRepDegree(fileID, chunkNo, addr, true);
 	}
 
+	@Override
+	public String toString() {
+		return "handlestore";
+	}
 }
