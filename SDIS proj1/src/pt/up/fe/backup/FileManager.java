@@ -144,9 +144,9 @@ public class FileManager {
 	}
 	
 	public returnTypes saveChunk(BackupChunk c) {
+		String recID = Packet.bytesToHex(c.getFileID());
 		
 		for(BackupChunk chunk : backedUpChunks) {
-			String recID = Packet.bytesToHex(c.getFileID());
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == c.getChunkNo()) {
 				return returnTypes.FILE_EXISTS;
@@ -185,8 +185,8 @@ public class FileManager {
 	 * @return
 	 */
 	public returnTypes deleteAllChunks(byte[] fileID) {
+		String recID = Packet.bytesToHex(fileID);
 		for(BackupChunk chunk : backedUpChunks) {
-			String recID = Packet.bytesToHex(fileID);
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID)) {
 				String filepath = "storage/";
@@ -209,14 +209,32 @@ public class FileManager {
 	}
 	
 	/**
+	 * 
+	 * @param fileID
+	 * @param chunkNo
+	 * @return
+	 */
+	public BackupChunk getChunk(byte[] fileID, int chunkNo) {
+		String recID = Packet.bytesToHex(fileID);
+		for(BackupChunk chunk : backedUpChunks) {
+			String comID = Packet.bytesToHex(chunk.getFileID());
+			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
+				return chunk;
+			}
+		}
+		
+		return null;	
+	}
+	
+	/**
 	 * Deletes Chunk from FileSystem.
 	 * Unfinished. TODO
 	 * @param fileID
 	 * @return
 	 */
 	public returnTypes deleteChunk(byte[] fileID, int chunkNo) {
+		String recID = Packet.bytesToHex(fileID);
 		for(BackupChunk chunk : backedUpChunks) {
-			String recID = Packet.bytesToHex(fileID);
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
 				String filepath = "storage/";
@@ -240,7 +258,18 @@ public class FileManager {
 	
 	public returnTypes deleteFile(byte[] fileID) {
 		String recID = Packet.bytesToHex(fileID);
-		boolean file = files.remove(fileID);
+		for(BackupFile file : files) {
+			String comID = Packet.bytesToHex(file.getFileID());
+			if(comID.equals(recID)) {
+				boolean success = (new File (file.getFilename())).delete();
+				if(success) {
+					success = files.remove(fileID);
+					if(success) {
+						return returnTypes.SUCCESS;
+					}
+				}
+			}
+		}
 		
 		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
