@@ -169,14 +169,14 @@ public class FileManager {
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
-					
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+					System.out.println("Stuff " + chunkCount);
 				}
 				
 				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);
-				
+				System.out.println("Stuff:" + files.size());
 				updateLog();
 
 			} catch(Exception e) {
@@ -197,11 +197,8 @@ public class FileManager {
 		if(currSize + c.getSize() > maxSize) {
 			try {
 				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.REMOVE, null).get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
+			} catch (InterruptedException e) {e.printStackTrace();} catch (ExecutionException e) {e.printStackTrace();}
+			
 			
 			//TODO checks if there is enough space after remove and if so proceeds with backup, returns failure otherwise
 			return returnTypes.FAILURE;
@@ -283,7 +280,6 @@ public class FileManager {
 	
 	/**
 	 * Deletes Chunk from FileSystem.
-	 * Unfinished. TODO
 	 * @param fileID
 	 * @return
 	 */
