@@ -38,14 +38,12 @@ public class SendChunkTask extends Task {
 				for(Packet p : messages) {
 					if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo) {
 						done = true;
-						//write info to log ????
 					}
 				}
 				
 				if(!done) {
 					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData(), null);
 					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDR);
-					//write info to log
 				}
 			} catch (InterruptedException e) {e.printStackTrace();}
 		} catch (IOException e) {e.printStackTrace();}

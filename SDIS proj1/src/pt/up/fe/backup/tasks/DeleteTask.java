@@ -22,7 +22,7 @@ public class DeleteTask extends Task {
 
 	@Override
 	public void run() {
-		FileManager.returnTypes result = fManager.deleteAllChunks(fileID);
+		FileManager.returnTypes result = DistributedBackupSystem.fManager.deleteAllChunks(fileID);
 		
 		if(result != FileManager.returnTypes.FAILURE) {
 			try {

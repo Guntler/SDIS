@@ -1,5 +1,6 @@
 package pt.up.fe.backup.tasks;
 
+import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 
 /**
@@ -17,7 +18,7 @@ public class HandleDeleteTask extends Task {
 
 	@Override
 	public void run() {
-		FileManager.returnTypes result = fManager.deleteAllChunks(fileID);
+		DistributedBackupSystem.fManager.deleteAllChunks(fileID);
 	}
 
 }
