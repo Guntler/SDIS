@@ -15,8 +15,8 @@ import pt.up.fe.backup.Packet;
  *
  */
 public class SendChunkTask extends Task {
-	byte[] fileID;
-	int chunkNo;
+	private byte[] fileID;
+	private int chunkNo;
 
 	public SendChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
 		super(fManager);
@@ -43,7 +43,7 @@ public class SendChunkTask extends Task {
 				}
 				
 				if(!done) {
-					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData());
+					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData(), null);
 					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDR);
 					//write info to log
 				}

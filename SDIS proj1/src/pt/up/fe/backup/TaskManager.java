@@ -7,13 +7,13 @@ import pt.up.fe.backup.tasks.DeleteTask;
 import pt.up.fe.backup.tasks.HandleDeleteTask;
 import pt.up.fe.backup.tasks.HandleRemoveTask;
 import pt.up.fe.backup.tasks.HandleStoreTask;
-import pt.up.fe.backup.tasks.ReceiveChunkTask;
+import pt.up.fe.backup.tasks.RemoveTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
@@ -29,8 +29,8 @@ public class TaskManager {
 			return executor.submit(new BackUpChunkTask(dbs.getFManager(), chunk));
 		case STORECHUNK:
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), chunk));
-		case RECEIVECHUNK:
-			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), chunk));
+		case REMOVE:
+			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
 		default:
 			return null;
 		}
@@ -40,6 +40,8 @@ public class TaskManager {
 		switch(type) {
 		case SENDCHUNK:
 			return executor.submit(new SendChunkTask(dbs.getFManager(), fileID, chunkNo));
+		case REMOVE:
+			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
 		default:
 			return null;
 		}
@@ -47,14 +49,12 @@ public class TaskManager {
 	
 	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
-		case HANDLE_REMOVE:
-			return executor.submit(new HandleRemoveTask(dbs.getFManager(), fileID, chunkNo));
 		case DELETE:
 			return executor.submit(new DeleteTask(dbs.getFManager(), fileID));
 		case RESTORECHUNK:
 			return executor.submit(new RestoreChunkTask(dbs.getFManager(), fileID, chunkNo));
-		case HANDLE_STORE:
-			return executor.submit(new HandleStoreTask(dbs.getFManager(), fileID, chunkNo));
+		case REMOVE:
+			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
 		default:
 			return null;
 		}
@@ -73,14 +73,11 @@ public class TaskManager {
 		//TODO
 		//IF A PUTCHUNK TASK IS TAKING PLACE, THIS SHOULD NOT RUN
 		else if (packet.packetType.equals("REMOVED")) {
-			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
-		}
-		else if (packet.packetType.equals("CHUNK")) {
-			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), packet.getChunk()));
+			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		else if (packet.packetType.equals("STORED")) {
 			executor.messageActiveTasks(packet);
-			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		return null;
 	}

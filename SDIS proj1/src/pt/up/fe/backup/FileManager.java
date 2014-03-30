@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class FileManager {
 	public static int bytesToRead = 1048576;
@@ -190,6 +191,19 @@ public class FileManager {
 			}
 		}
 		
+		if(currSize + c.getSize() > maxSize) {
+			try {
+				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.REMOVE, null).get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			
+			
+			return returnTypes.FAILURE;
+		}
+		
 		String name = "";
 		name += "chunk-";
 		name += this.nextAvailableFileNo;
@@ -338,5 +352,38 @@ public class FileManager {
 		}
 		
 		return null;
+	}
+
+	synchronized public void updateRepDegree(byte[] fileID, int chunkNo, InetAddress addr, boolean removeOrAdd) {
+		for(BackupChunk chunk : this.backedUpChunks) {
+			if(Packet.bytesToHex(chunk.getFileID()).equals(Packet.bytesToHex(fileID)) && chunk.getChunkNo() == chunkNo) {
+				boolean alreadyStored = false;
+				for(InetAddress a : chunk.getStored())
+				{
+					if(a.equals(addr)) {
+						alreadyStored = true;
+						
+						if(!removeOrAdd)
+							chunk.getStored().remove(a);
+						break;
+					}
+				}
+				
+				if(removeOrAdd && !alreadyStored) {
+					chunk.increaseRepDegree();
+					chunk.addToStored(addr);
+				}
+				else if (alreadyStored){
+					chunk.decreaseRepDegree();
+				}
+
+				updateLog();
+				return;
+			}
+		}
+	}
+	
+	public void assureChunkRepDegree(byte[] fileID, int chunkNo) {
+		
 	}
 }

@@ -78,4 +78,12 @@ public class BackupChunk {
 	public void removeFromStored(InetAddress addr) {
 		this.stored.remove(addr);
 	}
+
+	public void increaseRepDegree() {
+		this.curReplicationDegree++;
+	}
+
+	public void decreaseRepDegree() {
+		this.curReplicationDegree--;
+	}
 }

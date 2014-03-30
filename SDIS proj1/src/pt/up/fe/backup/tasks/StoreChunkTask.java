@@ -9,7 +9,7 @@ import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 public class StoreChunkTask extends Task {
-	BackupChunk chunk;
+	private BackupChunk chunk;
 
 	public StoreChunkTask(FileManager fManager, BackupChunk chunk) {
 		super(fManager);
@@ -22,8 +22,15 @@ public class StoreChunkTask extends Task {
 		FileManager.returnTypes result = DistributedBackupSystem.fManager.saveChunk(chunk);
 		
 		if(result != FileManager.returnTypes.FAILURE) {
+			int waitTime = (int)(Math.random() * 400);
 			try {
-				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
+				Thread.sleep(waitTime);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		
+			try {
+				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null, null), CommunicationManager.Channels.MC);
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}

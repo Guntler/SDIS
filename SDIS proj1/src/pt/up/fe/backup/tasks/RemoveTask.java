@@ -14,8 +14,8 @@ import pt.up.fe.backup.Packet;
  *
  */
 public class RemoveTask extends Task {
-	byte[] fileID;
-	int chunkNo;
+	private byte[] fileID;
+	private int chunkNo;
 
 	public RemoveTask(FileManager fManager, byte[] fileID, int chunkNo) {
 		super(fManager);
@@ -30,7 +30,7 @@ public class RemoveTask extends Task {
 		
 		if(result == FileManager.returnTypes.SUCCESS) {
 			try {
-				Packet pack = new Packet("REMOVED", "1.0", fileID, chunkNo, 0, null);
+				Packet pack = new Packet("REMOVED", "1.0", fileID, chunkNo, 0, null, null);
 				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 				//write info to log
 			} catch (IOException e) {e.printStackTrace();}

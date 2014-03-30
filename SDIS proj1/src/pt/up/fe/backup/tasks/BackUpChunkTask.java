@@ -23,7 +23,7 @@ public class BackUpChunkTask extends Task {
 		int waitTime = 500;
 
 		try {
-			Packet pack = new Packet("PUTCHUNK", "1.0", chunk);
+			Packet pack = new Packet("PUTCHUNK", "1.0", chunk, null);
 			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDB);
 
 			do {
@@ -48,7 +48,7 @@ public class BackUpChunkTask extends Task {
 				}
 				else {
 					System.out.println("Chunk was not successfully stored");
-					DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("DELETE", "1.0", chunk.getFileID(), 0, 0, null));
+					DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("DELETE", "1.0", chunk.getFileID(), 0, 0, null, null));
 					done = true;
 				}
 				

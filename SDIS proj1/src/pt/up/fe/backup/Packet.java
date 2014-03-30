@@ -2,6 +2,7 @@ package pt.up.fe.backup;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
@@ -14,12 +15,14 @@ public class Packet {
 	protected int replicationDeg;
 	protected String version;
 	protected byte[] data = null;
+	protected InetAddress addr;
 	
 	/**
 	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
 	 */
-	public Packet(String msg) {
+	public Packet(String msg, InetAddress addr) {
 		parseMessage(msg);
+		this.addr = addr;
 	}
 	
 	/**
@@ -31,22 +34,24 @@ public class Packet {
 	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
 	 * DELETE <FileId> <CRLF>
 	 */
-	public Packet(String packetType, String version, BackupChunk chunk ) {
+	public Packet(String packetType, String version, BackupChunk chunk, InetAddress addr) {
 		this.packetType = packetType;
 		this.version = version;
 		this.chunkNo = chunk.getChunkNo();
 		this.replicationDeg = chunk.getWantedReplicationDegree();
 		this.data = chunk.getData();
 		this.fileID = chunk.getFileID();
+		this.addr = addr;
 	}
 	
-	public Packet(String packetType, String version, byte[] fileID, int chunkNo, int repDeg, byte[] body ) {
+	public Packet(String packetType, String version, byte[] fileID, int chunkNo, int repDeg, byte[] body, InetAddress addr) {
 		this.packetType = packetType;
 		this.version = version;
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 		this.replicationDeg = repDeg;
 		this.data = body;
+		this.addr = addr;
 	}
 	
 	public byte[] getData() {
@@ -236,5 +241,9 @@ public class Packet {
 			System.out.println("Size should be: " + length);
 		}
 		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
+	}
+	
+	public InetAddress getSenderAddress() {
+		return addr;
 	}
 }
