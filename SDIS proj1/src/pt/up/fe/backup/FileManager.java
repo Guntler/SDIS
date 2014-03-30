@@ -1,11 +1,14 @@
 package pt.up.fe.backup;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -200,7 +203,7 @@ public class FileManager {
 				e.printStackTrace();
 			}
 			
-			
+			//TODO checks if there is enough space after remove and if so proceeds with backup, returns failure otherwise
 			return returnTypes.FAILURE;
 		}
 		
@@ -385,5 +388,40 @@ public class FileManager {
 	
 	public void assureChunkRepDegree(byte[] fileID, int chunkNo) {
 		
+	}
+	
+	public void releaseSpace() {
+		
+	}
+	
+	public returnTypes writeChunk(BackupChunk chunk) {
+		String recID = Packet.bytesToHex(chunk.getFileID());
+		for(BackupFile file : files) {
+			String comID = Packet.bytesToHex(file.getFileID());
+			if(comID.equals(recID)) {
+				File restoredFile = new File(file.getFilename());
+				if(!restoredFile.exists())
+					try {restoredFile.createNewFile();} catch (IOException e) {e.printStackTrace();}
+				
+				try {
+					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile));
+					buffOut.write(chunk.getData());
+					buffOut.flush();
+					buffOut.close();
+					updateLog();
+					return returnTypes.SUCCESS;
+				} catch (FileNotFoundException e) {e.printStackTrace();} catch (IOException e) {e.printStackTrace();}
+			}
+		}
+		
+		return returnTypes.FAILURE;
+	}
+
+	public ArrayList<BackupFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(ArrayList<BackupFile> files) {
+		this.files = files;
 	}
 }

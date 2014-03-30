@@ -24,5 +24,6 @@ public class HandleRemoveTask extends Task {
 	@Override
 	public void run() {
 		DistributedBackupSystem.fManager.updateRepDegree(fileID, chunkNo, addr, false);
+		DistributedBackupSystem.fManager.assureChunkRepDegree(fileID, chunkNo); //TODO checks if chunk repDegree is too small and if yes waits 0-400 ms, checks messages to see if it received a putchunk (make putchunk go to messages) and if not starts backup subprotocol
 	}
 }
