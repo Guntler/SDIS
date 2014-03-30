@@ -6,6 +6,7 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class SocketListener implements Runnable {
 	protected MulticastSocket socket = null;
@@ -26,11 +27,11 @@ public class SocketListener implements Runnable {
 		}
 		
 		while(!finished) {
-			byte[] buf = new byte[256];
+			byte[] buf = new byte[65536];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);
-				byte[] data = packet.getData();
+				byte[] data = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 				
 				//Problem with parsing may derive from this, because the header isn't codified, but becomes it
 				String packetString = new String(data, StandardCharsets.ISO_8859_1);

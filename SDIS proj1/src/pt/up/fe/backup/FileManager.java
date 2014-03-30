@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class FileManager {
@@ -160,6 +161,12 @@ public class FileManager {
 		byte[] fileHash = computeFileHash(filename);
 		
 		if(fileHash != null) {
+			for(BackupFile file : files) {
+				if(Packet.bytesToHex(file.getFileID()).equals(Packet.bytesToHex(fileHash)))
+					System.out.println("File already exists in system");
+					return;
+			}
+			
 			try {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
@@ -167,9 +174,8 @@ public class FileManager {
 				int chunkCount = 0;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
-					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, buffer, filename, bytesRead, replicationDegree, 1, null);
+					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, Arrays.copyOfRange(buffer, 0, bytesRead), filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
-					
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				

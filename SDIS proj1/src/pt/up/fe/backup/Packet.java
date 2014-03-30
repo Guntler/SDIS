@@ -137,10 +137,7 @@ public class Packet {
 			
 		
 		System.out.println("Sending packet: " + msg);
-		//buf = msg.getBytes();
-		
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getMcastGroup(),socket.getLocalPort());
-		
 		
 		socket.send(packet);
 	}
@@ -238,7 +235,6 @@ public class Packet {
 		int length = 0;
 		if(data != null) {
 			length = data.length;
-			System.out.println("Size should be: " + length);
 		}
 		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
 	}
