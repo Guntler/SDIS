@@ -86,6 +86,8 @@ public class FileManager {
 			    	
 			    }
 			}
+			
+			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
