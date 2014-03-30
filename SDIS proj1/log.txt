@@ -1,4 +1,0 @@
-allocatedmemory: 1073741824
-usedmemory: 0
-lastchunk: 0
-file: 3BBD0689EAC8109EF87E84062DEB72FE97722A85FBBA48EF0D7A1F723B1352F9 C:\Users\User\Downloads\teste3.png 1 1
