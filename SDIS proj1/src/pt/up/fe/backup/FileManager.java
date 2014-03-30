@@ -62,7 +62,7 @@ public class FileManager {
 		}
 	}
 	
-	public void readLog() {
+	synchronized public void readLog() {
 		BufferedReader reader;
 		try {
 			File log = new File("log.txt");
@@ -177,13 +177,11 @@ public class FileManager {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, Arrays.copyOfRange(buffer, 0, bytesRead), filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
-					System.out.println("Stuff " + chunkCount);
 				}
 				
 				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);
-				System.out.println("Stuff:" + files.size());
 				updateLog();
 
 			} catch(Exception e) {

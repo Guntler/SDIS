@@ -3,7 +3,9 @@ package pt.up.fe.backup;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -17,23 +19,104 @@ public class Packet {
 	protected byte[] data = null;
 	protected InetAddress addr;
 	
-	/**
-	 * @param args	<MessageType> <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
-	 */
-	public Packet(String msg, InetAddress addr) {
-		parseMessage(msg);
-		this.addr = addr;
-	}
 	
-	/**
-	 * Constructor for PutChunk
-	 * PUTCHUNK <Version> <FileId> <ChunkNo> <ReplicationDeg> <CRLF> <CRLF> <Body>
-	 * CHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF> <Body>
-	 * GETCHUNK <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
-	 * REMOVED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
-	 * STORED <Version> <FileId> <ChunkNo> <CRLF> <CRLF>
-	 * DELETE <FileId> <CRLF>
-	 */
+	public Packet(byte[] buf, InetAddress addr) {
+		this.addr = addr;
+		boolean crFound = false;
+		byte[] header = null;
+		byte[] data = null;
+
+		for(int i = 0; i < buf.length; i++) {
+			if(buf[i] == (byte) 0x0D) {
+				crFound = true;
+
+				if(i + 3 < buf.length) {
+					if (buf[i+1] == (byte) 0x0A && buf[i+2] == (byte) 0x0D && buf[i+3] == (byte) 0x0A) {
+						header = Arrays.copyOfRange(buf, 0, i+4);
+						if(i+4 < buf.length)
+							data = Arrays.copyOfRange(buf, i+4, buf.length);
+						else
+							data = null;
+
+						break;
+					}
+				}
+			}
+		}
+		
+		if(!crFound) {
+			System.out.println("Error, missing crlf");
+		}
+		else {
+		
+			this.data = data;
+			String msg = new String(header, StandardCharsets.ISO_8859_1);
+			
+			if(msg.contains("PUTCHUNK")) {
+				this.packetType = "PUTCHUNK";
+				String[] packOptions = msg.split(" ");
+				String version = packOptions[1];
+				String fileID = packOptions[2];
+				String chunkNo = packOptions[3];
+				String repDeg = packOptions[4];
+				this.fileID = hexToByte(fileID);
+				this.version = version;
+				this.chunkNo = Integer.parseInt(chunkNo);
+				this.replicationDeg = Integer.parseInt(repDeg.split("\\r\\n")[0]);
+				System.out.println("Body has " + data.length + " bytes");
+			}
+			else if(msg.contains("CHUNK")) {
+				this.packetType = "CHUNK";
+				String[] packOptions = msg.split(" ");
+				String version = packOptions[1];
+				String fileID = packOptions[2];
+				String chunkNo = packOptions[3];
+
+				this.fileID = hexToByte(fileID);
+				this.version = version;
+				this.chunkNo = Integer.parseInt(chunkNo.split("\\r\\n")[0]);
+			}
+			else if(msg.contains("GETCHUNK")) {
+				this.packetType = "GETCHUNK";
+				String[] packOptions = msg.split(" ");
+				String version = packOptions[1];
+				String fileID = packOptions[2];
+				String chunkNo = packOptions[3];
+				this.fileID = hexToByte(fileID);
+				this.version = version;
+				this.chunkNo = Integer.parseInt(chunkNo.split("\\r\\n")[0]);
+			}
+			else if(msg.contains("REMOVED")) {
+				this.packetType = "REMOVED";
+				String[] packOptions = msg.split(" ");
+				String version = packOptions[1];
+				String fileID = packOptions[2];
+				String chunkNo = packOptions[3];
+				
+				this.fileID = hexToByte(fileID);
+				this.version = version;
+				this.chunkNo = Integer.parseInt(chunkNo.split("\\r\\n")[0]);
+			}
+			else if(msg.contains("STORED")) {
+				String[] packOptions = msg.split(" ");
+				String version = packOptions[1];
+				String fileID = packOptions[2];
+				String chunkNo = packOptions[3];
+				this.fileID = Packet.hexToByte(fileID);
+				this.version = version;
+				this.packetType = "STORED";
+				this.chunkNo = Integer.parseInt(chunkNo.split("\\r\\n")[0]);
+			}
+			else if(msg.contains("DELETE")) {
+				this.packetType = "DELETE";
+				String[] packOptions = msg.split(" ");
+				String fileID = packOptions[1].split("\\r\\n")[0];
+				this.fileID = hexToByte(fileID);
+			}
+		}
+	}
+
+	
 	public Packet(String packetType, String version, BackupChunk chunk, InetAddress addr) {
 		this.packetType = packetType;
 		this.version = version;
@@ -150,14 +233,15 @@ public class Packet {
 	    return DatatypeConverter.parseHexBinary(s);
 	}
 	
-	public void parseMessage(String msg) {
+	/*public void parseMessage(String msg) {
 		if(msg.contains("PUTCHUNK")) {
 			this.packetType = "PUTCHUNK";
-			String[] packOptions = msg.split("\\r?\\n");
+			//String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String body = packOptions[2];
 			for(int i=3;i<packOptions.length; i++) {
-				body += "\r\n\r\n";
+				body += "\r\n";
 				body += packOptions[i];
 			}
 			String version = header[1];
@@ -169,10 +253,11 @@ public class Packet {
 			this.chunkNo = Integer.parseInt(chunkNo);
 			this.replicationDeg = Integer.parseInt(repDeg);
 			this.data = body.getBytes();
+			System.out.println("Body has " + data.length + " bytes");
 		}
 		else if(msg.contains("CHUNK")) {
 			this.packetType = "CHUNK";
-			String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String body = packOptions[2];
 			for(int i=3;i<packOptions.length; i++) {
@@ -190,7 +275,7 @@ public class Packet {
 		}
 		else if(msg.contains("GETCHUNK")) {
 			this.packetType = "GETCHUNK";
-			String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String version = header[1];
 			String fileID = header[2];
@@ -201,7 +286,7 @@ public class Packet {
 		}
 		else if(msg.contains("REMOVED")) {
 			this.packetType = "REMOVED";
-			String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String version = header[1];
 			String fileID = header[2];
@@ -212,7 +297,7 @@ public class Packet {
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("STORED")) {
-			String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String version = header[1];
 			String fileID = header[2];
@@ -224,12 +309,12 @@ public class Packet {
 		}
 		else if(msg.contains("DELETE")) {
 			this.packetType = "DELETE";
-			String[] packOptions = msg.split("\\r?\\n");
+			String[] packOptions = msg.split("\\r\\n");
 			String[] header = packOptions[0].split(" ");
 			String fileID = header[1];
 			this.fileID = hexToByte(fileID);
 		}
-	}
+	}*/
 
 	public BackupChunk getChunk() {
 		int length = 0;
