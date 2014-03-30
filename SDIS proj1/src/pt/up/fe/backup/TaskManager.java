@@ -1,20 +1,19 @@
 package pt.up.fe.backup;
 
 import java.util.concurrent.Future;
-
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.BackupFileTask;
 import pt.up.fe.backup.tasks.DeleteTask;
 import pt.up.fe.backup.tasks.HandleDeleteTask;
 import pt.up.fe.backup.tasks.HandleRemoveTask;
+import pt.up.fe.backup.tasks.HandleStoreTask;
 import pt.up.fe.backup.tasks.ReceiveChunkTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
-import pt.up.fe.backup.tasks.UpdateStoredTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, UPDATESTORED, HANDLE_REMOVE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, RECEIVECHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
@@ -54,6 +53,8 @@ public class TaskManager {
 			return executor.submit(new DeleteTask(dbs.getFManager(), fileID));
 		case RESTORECHUNK:
 			return executor.submit(new RestoreChunkTask(dbs.getFManager(), fileID, chunkNo));
+		case HANDLE_STORE:
+			return executor.submit(new HandleStoreTask(dbs.getFManager(), fileID, chunkNo));
 		default:
 			return null;
 		}
@@ -77,15 +78,11 @@ public class TaskManager {
 		else if (packet.packetType.equals("CHUNK")) {
 			return executor.submit(new ReceiveChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
-		return null;
-	}
-	
-	public void handlePacket(Packet packet) {
-		if(packet.packetType.equals("STORED") || packet.packetType.equals("CHUNK")) {
+		else if (packet.packetType.equals("STORED")) {
 			executor.messageActiveTasks(packet);
+			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
 		}
-		else executeTask(packet);
-		//complete this with other messages
+		return null;
 	}
 	
 	public void finish() {
@@ -96,7 +93,7 @@ public class TaskManager {
 		executor.messageActiveTasks(p);
 	}
 
-	public Future<?> executeTask(TaskTypes type, String name, int repDeg) {
+	synchronized public Future<?> executeTask(TaskTypes type, String name, int repDeg) {
 		if(type == TaskTypes.BACKUPFILE) {
 			return executor.submit(new BackupFileTask(null, name, repDeg));
 		}

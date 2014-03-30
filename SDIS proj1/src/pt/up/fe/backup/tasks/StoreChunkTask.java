@@ -24,7 +24,6 @@ public class StoreChunkTask extends Task {
 		if(result != FileManager.returnTypes.FAILURE) {
 			try {
 				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null), CommunicationManager.Channels.MC);
-				//write info to log
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
