@@ -55,7 +55,9 @@ public class DistributedBackupSystem {
 			}
 			else if(input.equals("help")) {
 				System.out.println("'backup \"filename\" repDegree' to backup a file.");
-				System.out.println("'restore \"filename\" ' to backup a file.");
+				System.out.println("'restore \"filename\" ' to restore a file.");
+				System.out.println("'delete \"filename\" ' to delete a file.");
+				System.out.println("'setAllocatedMemory numberOfBytes' to delete a file.");
 				System.out.println("'quit' to exit the program.");
 			}
 			else {
@@ -71,41 +73,32 @@ public class DistributedBackupSystem {
 						int repDeg = Integer.parseInt(commands.get(2));
 
 						System.out.println("Starting backup...");
-						//fManager.backupFile(commands.get(1), repDeg);
 						tManager.executeTask(TaskManager.TaskTypes.BACKUPFILE,commands.get(1), repDeg).get();
 						System.out.println("done...");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					} catch (Exception e) {e.printStackTrace();}
 				}
 				else if(commands.size() == 2 && commands.get(0).equals("restore")) {
 					try {
 						System.out.println("Starting restore...");
-						tManager.executeTask(TaskManager.TaskTypes.RESTOREFILE,commands.get(1), 0);
+						tManager.executeTask(TaskManager.TaskTypes.RESTOREFILE,commands.get(1), 0).get();
 						System.out.println("done...");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					} catch (Exception e) {e.printStackTrace();}
 				}
 				else if(commands.size() == 2 && commands.get(0).equals("delete")) {
 					try {
 						System.out.println("Starting deletion...");
-						tManager.executeTask(TaskManager.TaskTypes.DELETEFILE,commands.get(1), 0);
+						tManager.executeTask(TaskManager.TaskTypes.DELETEFILE,commands.get(1), 0).get();
 						System.out.println("done...");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					} catch (Exception e) {e.printStackTrace();}
 				}
-				else if(commands.size() == 2 && commands.get(0).equals("remove")) {
+				else if(commands.size() == 2 && commands.get(0).equals("setAllocatedMemory")) {
 					try {
+						int bytes = Integer.parseInt(commands.get(1));
 						System.out.println("Starting space reclaiming...");
-						tManager.executeTask(TaskManager.TaskTypes.DELETEFILE,commands.get(1), 0);
+						tManager.executeTask(TaskManager.TaskTypes.REMOVE,"", bytes).get();
 						System.out.println("done...");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					} catch (Exception e) {e.printStackTrace();}
 				}
-				/* TODO REMOVED */
 				else {
 					System.out.println("Unknown command. Type 'help' for a list of commands.");
 				}
