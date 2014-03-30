@@ -151,12 +151,17 @@ public class Packet {
 	public void parseMessage(String msg) {
 		if(msg.contains("PUTCHUNK")) {
 			this.packetType = "PUTCHUNK";
-			String[] packOptions = msg.split(" ");
-			String version = packOptions[1];
-			String fileID = packOptions[2];
-			String chunkNo = packOptions[3];
-			String repDeg = packOptions[4].split("\\r?\\n")[0];
-			String body = packOptions[4].split("\\r?\\n")[2];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String body = packOptions[2];
+			for(int i=3;i<packOptions.length; i++) {
+				body += "\r\n\r\n";
+				body += packOptions[i];
+			}
+			String version = header[1];
+			String fileID = header[2];
+			String chunkNo = header[3];
+			String repDeg = header[4];
 			this.fileID = hexToByte(fileID);
 			this.version = version;
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -165,11 +170,17 @@ public class Packet {
 		}
 		else if(msg.contains("CHUNK")) {
 			this.packetType = "CHUNK";
-			String[] packOptions = msg.split(" ");
-			String version = packOptions[1];
-			String fileID = packOptions[2];
-			String chunkNo = packOptions[3].split("\\r?\\n")[0];
-			String body = packOptions[3].split("\\r?\\n")[2];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String body = packOptions[2];
+			for(int i=3;i<packOptions.length; i++) {
+				body += "\r\n\r\n";
+				body += packOptions[i];
+			}
+			String version = header[1];
+			String fileID = header[2];
+			String chunkNo = header[3];
+
 			this.fileID = hexToByte(fileID);
 			this.version = version;
 			this.chunkNo = Integer.parseInt(chunkNo);
@@ -177,29 +188,33 @@ public class Packet {
 		}
 		else if(msg.contains("GETCHUNK")) {
 			this.packetType = "GETCHUNK";
-			String[] packOptions = msg.split(" ");
-			String version = packOptions[1];
-			String fileID = packOptions[2];
-			String chunkNo = packOptions[3].split("\\r?\\n")[0];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String version = header[1];
+			String fileID = header[2];
+			String chunkNo = header[3];
 			this.fileID = hexToByte(fileID);
 			this.version = version;
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("REMOVED")) {
 			this.packetType = "REMOVED";
-			String[] packOptions = msg.split(" ");
-			String version = packOptions[1];
-			String fileID = packOptions[2];
-			String chunkNo = packOptions[3].split("\\r?\\n")[0];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String version = header[1];
+			String fileID = header[2];
+			String chunkNo = header[3];
+			
 			this.fileID = hexToByte(fileID);
 			this.version = version;
 			this.chunkNo = Integer.parseInt(chunkNo);
 		}
 		else if(msg.contains("STORED")) {
-			String[] packOptions = msg.split(" ");
-			String version = packOptions[1];
-			String fileID = packOptions[2];
-			String chunkNo = packOptions[3].split("\\r?\\n")[0];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String version = header[1];
+			String fileID = header[2];
+			String chunkNo = header[3];
 			this.fileID = Packet.hexToByte(fileID);
 			this.version = version;
 			this.packetType = "STORED";
@@ -207,8 +222,9 @@ public class Packet {
 		}
 		else if(msg.contains("DELETE")) {
 			this.packetType = "DELETE";
-			String[] packOptions = msg.split(" ");
-			String fileID = packOptions[1].split("\\r?\\n")[0];
+			String[] packOptions = msg.split("\\r?\\n");
+			String[] header = packOptions[0].split(" ");
+			String fileID = header[1];
 			this.fileID = hexToByte(fileID);
 		}
 	}
