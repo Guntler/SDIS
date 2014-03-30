@@ -2,17 +2,23 @@ package pt.up.fe.backup.tasks;
 
 import java.io.IOException;
 
+import pt.up.fe.backup.BackupChunk;
 import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
+/**
+ * Takes place when a GETCHUNK packet is received. Gets the chunk that matches the info provided, 
+ * then sends a packet CHUNK to the network.
+ * @author pbpdi_000
+ *
+ */
 public class SendChunkTask extends Task {
 	byte[] fileID;
 	int chunkNo;
-	byte[] body;
 
-	public SendChunkTask(FileManager fManager, byte[] fileID, int chunkNo, byte[] body) {
+	public SendChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
 		super(fManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
@@ -23,6 +29,8 @@ public class SendChunkTask extends Task {
 		boolean done = false;
 		int waitTime = 500;
 
+		BackupChunk chunk = fManager.getChunk(fileID, chunkNo);
+		
 		try {
 			try {
 				Thread.sleep(waitTime);
@@ -35,7 +43,7 @@ public class SendChunkTask extends Task {
 				}
 				
 				if(!done) {
-					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, body);
+					Packet pack = new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData());
 					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDR);
 					//write info to log
 				}
