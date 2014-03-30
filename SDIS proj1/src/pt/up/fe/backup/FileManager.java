@@ -156,7 +156,7 @@ public class FileManager {
 		return null;
 	}
 
-	synchronized public void backupFile(String filename, int replicationDegree) {
+	public void backupFile(String filename, int replicationDegree) {
 		BackupFile newFile = null;
 		byte[] fileHash = computeFileHash(filename);
 		
@@ -178,7 +178,6 @@ public class FileManager {
 					chunkCount++;
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
-				
 				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);

@@ -31,7 +31,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 		if(r instanceof TaskFuture) {
 			activeTasks.remove(((TaskFuture) r).getTask());
 		}
-		
 		super.afterExecute(r, t);
 	}
 
@@ -40,7 +39,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
 		if(r instanceof TaskFuture) {
 			activeTasks.add(((TaskFuture) r).getTask());
 		}
-		
 		super.beforeExecute(t, r);
 	}
 	

@@ -24,8 +24,10 @@ public class BackupFileTask extends Task{
 			if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
 				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0);
 		}
-		
-		
 	}
 
+	@Override
+	public String toString() {
+		return "backupfile";
+	}
 }

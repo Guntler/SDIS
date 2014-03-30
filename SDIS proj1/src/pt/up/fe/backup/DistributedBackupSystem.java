@@ -72,7 +72,7 @@ public class DistributedBackupSystem {
 
 						System.out.println("Starting backup...");
 						//fManager.backupFile(commands.get(1), repDeg);
-						tManager.executeTask(TaskManager.TaskTypes.BACKUPFILE,commands.get(1), repDeg);
+						tManager.executeTask(TaskManager.TaskTypes.BACKUPFILE,commands.get(1), repDeg).get();
 						System.out.println("done...");
 					} catch (Exception e) {
 						e.printStackTrace();

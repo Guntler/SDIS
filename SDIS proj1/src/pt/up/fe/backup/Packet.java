@@ -63,7 +63,6 @@ public class Packet {
 				this.version = version;
 				this.chunkNo = Integer.parseInt(chunkNo);
 				this.replicationDeg = Integer.parseInt(repDeg.split("\\r\\n")[0]);
-				System.out.println("Body has " + data.length + " bytes");
 			}
 			else if(msg.contains("CHUNK")) {
 				this.packetType = "CHUNK";
