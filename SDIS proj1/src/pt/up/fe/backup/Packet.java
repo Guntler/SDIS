@@ -219,6 +219,11 @@ public class Packet {
 	}
 
 	public BackupChunk getChunk() {
+		int length = 0;
+		if(data != null) {
+			length = data.length;
+			System.out.println("Size should be: " + length);
+		}
 		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
 	}
 }

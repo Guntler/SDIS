@@ -29,9 +29,9 @@ public class CommunicationManager implements Runnable {
 		socketMC = new DBSsocket(mCastPort);
 		//socketMC.setLoopbackMode(true);
 		socketMDB = new DBSsocket(mBackupPort);
-		socketMDB.setLoopbackMode(true);
+		//socketMDB.setLoopbackMode(true);
 		socketMDR = new DBSsocket(mRecoverPort);
-		socketMDR.setLoopbackMode(true);
+		//socketMDR.setLoopbackMode(true);
 		InetAddress groupMC = InetAddress.getByName(this.mcastArgs.get(0));
 		InetAddress groupMDB = InetAddress.getByName(this.mcastArgs.get(2));
 		InetAddress groupMDR = InetAddress.getByName(this.mcastArgs.get(4));
