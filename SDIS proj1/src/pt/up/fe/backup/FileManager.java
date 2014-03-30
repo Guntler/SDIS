@@ -30,8 +30,36 @@ public class FileManager {
 		files = new ArrayList<BackupFile>();
 		backedUpChunks = new ArrayList<BackupChunk>();
 		this.dbs = dbs;
-		this.nextAvailableFileNo = 0;
 		
+		readLog();
+	}
+	
+	synchronized public void updateLog() {
+
+		try {
+			PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+			writer.println("allocatedmemory: " + this.maxSize);
+			writer.println("usedmemory: " + this.currSize);
+			writer.println("lastchunk: " + this.nextAvailableFileNo);
+			for(BackupFile file : files) {
+				writer.println("file: " + Packet.bytesToHex(file.getFileID()) + " " + file.getFilename() + " " + file.getReplicationDegree() + " " + file.getNumChunks());
+			}
+			for(BackupChunk chunk : backedUpChunks) {
+				String chunkData = "chunk: " + Packet.bytesToHex(chunk.getFileID()) + " " + chunk.getFilename() + " " + chunk.getChunkNo() + " " + chunk.getWantedReplicationDegree() + " " + chunk.getRepDeg() + " " + chunk.getSize();
+
+				for(InetAddress addr : chunk.getStored()) {
+					chunkData += " " + addr.getHostAddress();
+				}
+				writer.println(chunkData);
+			}
+			writer.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void readLog() {
 		BufferedReader reader;
 		try {
 			File log = new File("log.txt");
@@ -41,6 +69,7 @@ public class FileManager {
 				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
 				writer.println("allocatedmemory: 1073741824");
 				writer.println("usedmemory: 0");
+				writer.println("lastchunk: 0");
 				writer.close();
 			}
 			
@@ -146,18 +175,7 @@ public class FileManager {
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);
 				
-				String data = "file: " + Packet.bytesToHex(newFile.getFileID()) + " " + newFile.getFilename() + " " + newFile.getReplicationDegree() + " " + chunkCount;
-
-				File file =new File("log.txt");
-
-				if(!file.exists()){
-					file.createNewFile();
-				}
-
-				FileWriter fileWritter = new FileWriter(file.getName(),true);
-				BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-				bufferWritter.write(data);
-				bufferWritter.close();
+				updateLog();
 
 			} catch(Exception e) {
 				System.out.println("Error reading file: " + e.toString());
@@ -188,55 +206,9 @@ public class FileManager {
 			out.write(c.getData());
 			out.close();
 			this.backedUpChunks.add(c);
-
-			String data = "chunk: " + Packet.bytesToHex(c.getFileID()) + " " + name + " " + c.getChunkNo() + " " + c.getWantedReplicationDegree() + " " + 1 + " " + c.getSize();
-
-			for(InetAddress addr : c.getStored()) {
-				data += " " + addr.getHostAddress();
-			}
-
-			BufferedReader reader;
-
-			File log = new File("log.txt");
-
-			if(!log.exists())
-			{
-				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
-				writer.println("allocatedmemory: 1073741824");
-				writer.println("usedmemory: 0");
-				writer.close();
-			}
-
-			reader = new BufferedReader(new FileReader("log.txt"));
-
-			ArrayList<String> fileText = new ArrayList<String>();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(" ");
-				
-				if(parts[0].equals("usedmemory:")) {
-					currSize += c.getSize();
-					line = "usedmemory: " + this.currSize;
-				}
-				
-				fileText.add(line);
-			}
-			
-			fileText.add(data);
-			fileText.add("lastchunk: " + this.nextAvailableFileNo);
-			
-			reader.close();
-
-			FileWriter fileWritter = new FileWriter(log.getName(),false);
-			BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-			String towrite = "";
-			for(int i = 0; i < fileText.size(); i++) {
-				towrite += fileText.get(i);
-				if(i < fileText.size()-1)
-					towrite += "\n";
-			}
-			bufferWritter.write(towrite);
-			bufferWritter.close();
+			this.currSize += c.getSize();
+			this.nextAvailableFileNo++;
+			updateLog();
 
 		} catch (Exception e) {
 			e.printStackTrace();

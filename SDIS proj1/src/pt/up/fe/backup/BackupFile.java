@@ -27,4 +27,8 @@ public class BackupFile {
 	public int getReplicationDegree() {
 		return replicationDegree;
 	}
+
+	public int getNumChunks() {
+		return chunkNum;
+	}
 }
