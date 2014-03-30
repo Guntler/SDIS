@@ -55,6 +55,7 @@ public class DistributedBackupSystem {
 			}
 			else if(input.equals("help")) {
 				System.out.println("'backup \"filename\" repDegree' to backup a file.");
+				System.out.println("'restore \"filename\" ' to backup a file.");
 				System.out.println("'quit' to exit the program.");
 			}
 			else {
@@ -77,6 +78,25 @@ public class DistributedBackupSystem {
 						e.printStackTrace();
 					}
 				}
+				else if(commands.size() == 2 && commands.get(0).equals("restore")) {
+					try {
+						System.out.println("Starting restore...");
+						tManager.executeTask(TaskManager.TaskTypes.RESTOREFILE,commands.get(1), 0);
+						System.out.println("done...");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else if(commands.size() == 2 && commands.get(0).equals("delete")) {
+					try {
+						System.out.println("Starting deletion...");
+						tManager.executeTask(TaskManager.TaskTypes.DELETEFILE,commands.get(1), 0);
+						System.out.println("done...");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				/* TODO REMOVED */
 				else {
 					System.out.println("Unknown command. Type 'help' for a list of commands.");
 				}

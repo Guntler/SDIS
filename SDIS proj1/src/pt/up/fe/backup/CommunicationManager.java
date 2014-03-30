@@ -21,7 +21,7 @@ public class CommunicationManager implements Runnable {
 
 	public CommunicationManager(ArrayList<String> mcastArgs, DistributedBackupSystem dbs) throws IOException {
 		this.mcastArgs = mcastArgs;
-		this.dbs = dbs;
+		this.setDbs(dbs);
 		
 		final int mCastPort = Integer.parseInt(this.mcastArgs.get(1));
 		final int mBackupPort = Integer.parseInt(this.mcastArgs.get(3));
@@ -84,5 +84,13 @@ public class CommunicationManager implements Runnable {
 		this.listenerMC.toggleFinished();
 		this.listenerMDB.toggleFinished();
 		this.listenerMDR.toggleFinished();
+	}
+
+	public DistributedBackupSystem getDbs() {
+		return dbs;
+	}
+
+	public void setDbs(DistributedBackupSystem dbs) {
+		this.dbs = dbs;
 	}
 }

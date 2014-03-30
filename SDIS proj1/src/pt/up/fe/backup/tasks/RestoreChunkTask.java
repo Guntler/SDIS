@@ -35,7 +35,7 @@ public class RestoreChunkTask extends Task {
 				for(Packet p : messages) {
 					if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo) {
 						BackupChunk chunk = p.getChunk();
-						fManager.saveChunk(chunk);
+						fManager.writeChunk(chunk);
 						done = true;
 						//write info to log
 					}

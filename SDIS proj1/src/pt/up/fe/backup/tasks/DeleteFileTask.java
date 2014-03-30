@@ -2,6 +2,7 @@ package pt.up.fe.backup.tasks;
 
 import java.io.IOException;
 
+import pt.up.fe.backup.BackupFile;
 import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
@@ -13,15 +14,18 @@ import pt.up.fe.backup.Packet;
  *
  */
 public class DeleteFileTask extends Task {
-	byte[] fileID;
+	String filename;
 
-	public DeleteFileTask(FileManager fManager, byte[] fileID) {
+	public DeleteFileTask(FileManager fManager, String filename) {
 		super(fManager);
-		this.fileID = fileID;
+		this.filename= filename;
 	}
 
 	@Override
 	public void run() {
+		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
+		
+		byte[] fileID = file.getFileID();
 		FileManager.returnTypes result = fManager.deleteFile(fileID);
 		
 		if(result != FileManager.returnTypes.FAILURE) {
