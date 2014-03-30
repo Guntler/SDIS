@@ -178,10 +178,13 @@ public class FileManager {
 					chunkCount++;
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
+				System.out.println("Before file");
 				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
+				System.out.println("Stuff: " + newFile.getNumChunks());
 				files.add(newFile);
 				updateLog();
+				System.out.println("after log");
 
 			} catch(Exception e) {
 				System.out.println("Error reading file: " + e.toString());

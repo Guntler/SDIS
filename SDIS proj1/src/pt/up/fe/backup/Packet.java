@@ -204,6 +204,8 @@ public class Packet {
 			msg += msgArgs.get(i);
 		}
 		
+		System.out.println("Sending packet: " + msg);
+		
 		msg += "\r\n\r\n";
 		
 		if(data != null) {
@@ -217,8 +219,6 @@ public class Packet {
 			System.arraycopy(msg.getBytes(), 0, buf, 0, msg.length());
 		}
 			
-		
-		System.out.println("Sending packet: " + msg);
 		DatagramPacket packet = new DatagramPacket(buf,buf.length,socket.getMcastGroup(),socket.getLocalPort());
 		
 		socket.send(packet);
