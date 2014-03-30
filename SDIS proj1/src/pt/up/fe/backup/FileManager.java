@@ -2,12 +2,10 @@ package pt.up.fe.backup;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -235,7 +233,7 @@ public class FileManager {
 				if (success) {
 					success = backedUpChunks.remove(chunk);
 					
-					if(success) {System.out.println("The file has been successfully deleted");}
+					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
 					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
 				}
 				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
@@ -283,7 +281,7 @@ public class FileManager {
 				if (success) {
 					success = backedUpChunks.remove(chunk);
 					
-					if(success) {System.out.println("The file has been successfully deleted");}
+					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
 					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
 				}
 				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
@@ -304,6 +302,7 @@ public class FileManager {
 				if(success) {
 					success = files.remove(fileID);
 					if(success) {
+						updateLog();
 						return returnTypes.SUCCESS;
 					}
 				}
