@@ -419,6 +419,12 @@ public class FileManager {
 		
 		return returnTypes.FAILURE;
 	}
+	
+	public void printAllFiles() {
+		for(BackupFile file : files) {
+			file.printAllInfo();
+		}
+	}
 
 	public ArrayList<BackupFile> getFiles() {
 		return files;

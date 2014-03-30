@@ -58,6 +58,9 @@ public class DistributedBackupSystem {
 				System.out.println("'restore \"filename\" ' to restore a file.");
 				System.out.println("'delete \"filename\" ' to delete a file.");
 				System.out.println("'setAllocatedMemory numberOfBytes' to delete a file.");
+				System.out.println("'allocatedMemory' to print the current value for allocated memory.");
+				System.out.println("'usedMemory' to print the current value of used up memory.");
+				System.out.println("'filesStored' to print the list of files currently in storage.");
 				System.out.println("'quit' to exit the program.");
 			}
 			else {
@@ -98,6 +101,17 @@ public class DistributedBackupSystem {
 						tManager.executeTask(TaskManager.TaskTypes.REMOVE,"", bytes).get();
 						System.out.println("done...");
 					} catch (Exception e) {e.printStackTrace();}
+				}
+				else if(commands.size() == 1 && commands.get(0).equals("allocatedMemory")) {
+					System.out.println("The current value for allocated memory is " + fManager.getMaxSize() + " bytes.");
+				}
+				else if(commands.size() == 1 && commands.get(0).equals("usedMemory")) {
+					System.out.println("The current value for used up memory is " + fManager.getCurrSize() + " bytes.");
+				}
+				else if(commands.size() == 1 && commands.get(0).equals("filesStored")) {
+					System.out.println("Files currently in storage:");
+					System.out.println("Filename      Replication Degree      Number of Chunks");
+					DistributedBackupSystem.fManager.printAllFiles();
 				}
 				else {
 					System.out.println("Unknown command. Type 'help' for a list of commands.");

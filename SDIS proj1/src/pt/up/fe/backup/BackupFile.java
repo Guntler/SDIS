@@ -31,4 +31,8 @@ public class BackupFile {
 	public int getNumChunks() {
 		return chunkNum;
 	}
+	
+	public void printAllInfo() {
+		System.out.println(filename + "    " + replicationDegree + "    " + chunkNum);
+	}
 }
