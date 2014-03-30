@@ -162,11 +162,11 @@ public class FileManager {
 		
 		if(fileHash != null) {
 			for(BackupFile file : files) {
-				if(Packet.bytesToHex(file.getFileID()).equals(Packet.bytesToHex(fileHash)))
+				if(Packet.bytesToHex(file.getFileID()).equals(Packet.bytesToHex(fileHash))) {
 					System.out.println("File already exists in system");
 					return;
+				}
 			}
-			
 			try {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
