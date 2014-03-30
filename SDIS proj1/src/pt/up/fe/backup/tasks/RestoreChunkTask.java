@@ -9,8 +9,8 @@ import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 public class RestoreChunkTask extends Task {
-	byte[] fileID;
-	int chunkNo;
+	private byte[] fileID;
+	private int chunkNo;
 
 	public RestoreChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
 		super(fManager);
@@ -24,7 +24,7 @@ public class RestoreChunkTask extends Task {
 		int waitTime = 500;
 
 		try {
-			Packet pack = new Packet("GETCHUNK", "1.0", fileID, chunkNo, 0, null);
+			Packet pack = new Packet("GETCHUNK", "1.0", fileID, chunkNo, 0, null, null);
 			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 
 			do {

@@ -1,5 +1,8 @@
 package pt.up.fe.backup.tasks;
 
+import java.net.InetAddress;
+
+import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 
 /**
@@ -8,10 +11,11 @@ import pt.up.fe.backup.FileManager;
  *
  */
 public class HandleRemoveTask extends Task {
-	byte[] fileID;
-	int chunkNo;
+	private byte[] fileID;
+	private int chunkNo;
+	private InetAddress addr;
 
-	public HandleRemoveTask(FileManager fManager, byte[] fileID, int chunkNo) {
+	public HandleRemoveTask(FileManager fManager, byte[] fileID, int chunkNo, InetAddress addr) {
 		super(fManager);
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
@@ -19,7 +23,7 @@ public class HandleRemoveTask extends Task {
 
 	@Override
 	public void run() {
-		fManager.deleteChunk(fileID,chunkNo);
-		//write info to log
+		DistributedBackupSystem.fManager.updateRepDegree(fileID, chunkNo, addr, false);
+		DistributedBackupSystem.fManager.assureChunkRepDegree(fileID, chunkNo); //TODO checks if chunk repDegree is too small and if yes waits 0-400 ms, checks messages to see if it received a putchunk (make putchunk go to messages) and if not starts backup subprotocol
 	}
 }

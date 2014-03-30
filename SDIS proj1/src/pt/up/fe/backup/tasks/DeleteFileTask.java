@@ -33,7 +33,7 @@ public class DeleteFileTask extends Task {
 			
 			if(result != FileManager.returnTypes.FAILURE) {
 				try {
-					Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
+					Packet pack = new Packet("DELETE", null, fileID, 0, 0, null, null);
 					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 					//write info to log
 				} catch (IOException e) {e.printStackTrace();}

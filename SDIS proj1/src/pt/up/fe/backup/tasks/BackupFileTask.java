@@ -7,8 +7,8 @@ import pt.up.fe.backup.Packet;
 import pt.up.fe.backup.TaskManager;
 
 public class BackupFileTask extends Task{
-	String filename;
-	int replicationDegree;
+	private String filename;
+	private int replicationDegree;
 	
 	public BackupFileTask(FileManager fManager, String filename, int replicationDegree) {
 		super(fManager);

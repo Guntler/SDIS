@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class FileManager {
 	public static int bytesToRead = 1048576;
@@ -193,6 +194,19 @@ public class FileManager {
 			}
 		}
 		
+		if(currSize + c.getSize() > maxSize) {
+			try {
+				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.REMOVE, null).get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			
+			//TODO checks if there is enough space after remove and if so proceeds with backup, returns failure otherwise
+			return returnTypes.FAILURE;
+		}
+		
 		String name = "";
 		name += "chunk-";
 		name += this.nextAvailableFileNo;
@@ -267,31 +281,9 @@ public class FileManager {
 		return null;	
 	}
 	
-	public returnTypes writeChunk(BackupChunk chunk) {
-		String recID = Packet.bytesToHex(chunk.getFileID());
-		for(BackupFile file : files) {
-			String comID = Packet.bytesToHex(file.getFileID());
-			if(comID.equals(recID)) {
-				File restoredFile = new File(file.getFilename());
-				if(!restoredFile.exists())
-					try {restoredFile.createNewFile();} catch (IOException e) {e.printStackTrace();}
-				
-				try {
-					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile));
-					buffOut.write(chunk.getData());
-					buffOut.flush();
-					buffOut.close();
-					updateLog();
-					return returnTypes.SUCCESS;
-				} catch (FileNotFoundException e) {e.printStackTrace();} catch (IOException e) {e.printStackTrace();}
-			}
-		}
-		
-		return returnTypes.FAILURE;
-	}
-	
 	/**
 	 * Deletes Chunk from FileSystem.
+	 * Unfinished. TODO
 	 * @param fileID
 	 * @return
 	 */
@@ -363,6 +355,66 @@ public class FileManager {
 		}
 		
 		return null;
+	}
+
+	synchronized public void updateRepDegree(byte[] fileID, int chunkNo, InetAddress addr, boolean removeOrAdd) {
+		for(BackupChunk chunk : this.backedUpChunks) {
+			if(Packet.bytesToHex(chunk.getFileID()).equals(Packet.bytesToHex(fileID)) && chunk.getChunkNo() == chunkNo) {
+				boolean alreadyStored = false;
+				for(InetAddress a : chunk.getStored())
+				{
+					if(a.equals(addr)) {
+						alreadyStored = true;
+						
+						if(!removeOrAdd)
+							chunk.getStored().remove(a);
+						break;
+					}
+				}
+				
+				if(removeOrAdd && !alreadyStored) {
+					chunk.increaseRepDegree();
+					chunk.addToStored(addr);
+				}
+				else if (alreadyStored){
+					chunk.decreaseRepDegree();
+				}
+
+				updateLog();
+				return;
+			}
+		}
+	}
+	
+	public void assureChunkRepDegree(byte[] fileID, int chunkNo) {
+		
+	}
+	
+	public void releaseSpace() {
+		
+	}
+	
+	public returnTypes writeChunk(BackupChunk chunk) {
+		String recID = Packet.bytesToHex(chunk.getFileID());
+		for(BackupFile file : files) {
+			String comID = Packet.bytesToHex(file.getFileID());
+			if(comID.equals(recID)) {
+				File restoredFile = new File(file.getFilename());
+				if(!restoredFile.exists())
+					try {restoredFile.createNewFile();} catch (IOException e) {e.printStackTrace();}
+				
+				try {
+					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile));
+					buffOut.write(chunk.getData());
+					buffOut.flush();
+					buffOut.close();
+					updateLog();
+					return returnTypes.SUCCESS;
+				} catch (FileNotFoundException e) {e.printStackTrace();} catch (IOException e) {e.printStackTrace();}
+			}
+		}
+		
+		return returnTypes.FAILURE;
 	}
 
 	public ArrayList<BackupFile> getFiles() {

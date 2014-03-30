@@ -13,7 +13,7 @@ import pt.up.fe.backup.Packet;
  *
  */
 public class DeleteTask extends Task {
-	byte[] fileID;
+	private byte[] fileID;
 
 	public DeleteTask(FileManager fManager, byte[] fileID) {
 		super(fManager);
@@ -26,7 +26,7 @@ public class DeleteTask extends Task {
 		
 		if(result != FileManager.returnTypes.FAILURE) {
 			try {
-				Packet pack = new Packet("DELETE", null, fileID, 0, 0, null);
+				Packet pack = new Packet("DELETE", null, fileID, 0, 0, null, null);
 				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
 				//write info to log
 			} catch (IOException e) {e.printStackTrace();}

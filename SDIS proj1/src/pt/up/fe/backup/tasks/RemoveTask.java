@@ -14,8 +14,8 @@ import pt.up.fe.backup.Packet;
  *
  */
 public class RemoveTask extends Task {
-	byte[] fileID;
-	int chunkNo;
+	private byte[] fileID;
+	private int chunkNo;
 
 	public RemoveTask(FileManager fManager, byte[] fileID, int chunkNo) {
 		super(fManager);
@@ -25,15 +25,6 @@ public class RemoveTask extends Task {
 
 	@Override
 	public void run() {
-		FileManager.returnTypes result = fManager.deleteChunk(fileID,chunkNo);
-		//write info to log
-		
-		if(result == FileManager.returnTypes.SUCCESS) {
-			try {
-				Packet pack = new Packet("REMOVED", "1.0", fileID, chunkNo, 0, null);
-				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
-				//write info to log
-			} catch (IOException e) {e.printStackTrace();}
-		}
+		DistributedBackupSystem.fManager.releaseSpace(); //TODO removes all chunks with rep degree above necessary and sends removed packet for each
 	}
 }
