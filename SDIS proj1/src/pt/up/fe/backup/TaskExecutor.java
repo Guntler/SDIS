@@ -1,6 +1,6 @@
 package pt.up.fe.backup;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RunnableFuture;
@@ -17,11 +17,11 @@ public class TaskExecutor extends ThreadPoolExecutor {
 		return (RunnableFuture<T>) new TaskFuture (arg0, arg1);
 	}
 
-	ArrayList<Task> activeTasks;
+	CopyOnWriteArrayList<Task> activeTasks;
 	
 	public TaskExecutor(int poolSize) {
 		super(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-		activeTasks = new ArrayList<Task>();
+		activeTasks = new CopyOnWriteArrayList<Task>();
 		
 		
 	}

@@ -1,12 +1,14 @@
 package pt.up.fe.backup.tasks;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 public abstract class Task implements Runnable {
 	protected FileManager fManager;
+	//protected CopyOnWriteArrayList<Packet> messages;
 	protected ArrayList<Packet> messages;
 	
 	public Task(FileManager fManager) {

@@ -215,7 +215,6 @@ public class FileManager {
 			return returnTypes.FAILURE;
 		}
 		
-		nextAvailableFileNo++;
 		return returnTypes.SUCCESS;
 	}
 
