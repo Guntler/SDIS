@@ -54,6 +54,9 @@ public class FileManager {
 			    	if(parts[0].equals("allocatedmemory:")) {
 			    		setMaxSize(Integer.parseInt(parts[1]));
 			    	}
+			    	else if (parts[0].equals("lastchunk:")) {
+			    		nextAvailableFileNo = Integer.parseInt(parts[1]);
+			    	}
 			    	else if (parts[0].equals("usedmemory:")) {
 			    		setCurrSize(Integer.parseInt(parts[1]));
 			    	}
@@ -219,6 +222,7 @@ public class FileManager {
 			}
 			
 			fileText.add(data);
+			fileText.add("lastchunk: " + this.nextAvailableFileNo);
 			
 			reader.close();
 
@@ -228,7 +232,7 @@ public class FileManager {
 			for(int i = 0; i < fileText.size(); i++) {
 				towrite += fileText.get(i);
 				if(i < fileText.size()-1)
-					towrite += "\n";	
+					towrite += "\n";
 			}
 			bufferWritter.write(towrite);
 			bufferWritter.close();
