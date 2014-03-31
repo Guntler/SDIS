@@ -28,7 +28,7 @@ public class SendChunkTask extends Task {
 	public void run() {
 		boolean done = false;
 
-		BackupChunk chunk = fManager.getChunk(fileID, chunkNo);
+		BackupChunk chunk = DistributedBackupSystem.fManager.getChunk(fileID, chunkNo);
 		
 		if(chunk != null) {
 			try {
