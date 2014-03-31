@@ -18,12 +18,14 @@ public class RestoreFileTask extends Task{
 	@Override
 	public void run() {
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
-		
+
 		//System.out.println("Found " + Integer.toString(file.getNumChunks()) + " chunks.");
-		for(int i=0;i<file.getNumChunks(); i++) {
-			try {
-				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.RESTORECHUNK, file.getFileID(), i).get();
-			} catch (InterruptedException | ExecutionException e) {e.printStackTrace();}
+		if(file != null) {
+			for(int i=0;i<file.getNumChunks(); i++) {
+				try {
+					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.RESTORECHUNK, file.getFileID(), i).get();
+				} catch (InterruptedException | ExecutionException e) {e.printStackTrace();}
+			}
 		}
 	}
 }
