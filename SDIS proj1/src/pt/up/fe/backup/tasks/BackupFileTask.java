@@ -20,9 +20,11 @@ public class BackupFileTask extends Task{
 	public void run() {
 		DistributedBackupSystem.fManager.backupFile(filename, replicationDegree);
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
-		for(Packet p : messages) {
-			if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
-				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0);
+		if(file != null) {
+			for(Packet p : messages) {
+				if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
+					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0);
+			}
 		}
 	}
 

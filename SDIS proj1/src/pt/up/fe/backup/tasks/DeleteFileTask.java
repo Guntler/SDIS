@@ -24,15 +24,17 @@ public class DeleteFileTask extends Task {
 	@Override
 	public void run() {
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
-		byte[] fileID = file.getFileID();
-		FileManager.returnTypes result = DistributedBackupSystem.fManager.deleteFile(fileID);
-		if(result != FileManager.returnTypes.FAILURE) {
-			result = fManager.deleteAllChunks(fileID);
+		if(file != null) {
+			byte[] fileID = file.getFileID();
+			FileManager.returnTypes result = DistributedBackupSystem.fManager.deleteFile(fileID);
 			if(result != FileManager.returnTypes.FAILURE) {
-				try {
-					Packet pack = new Packet("DELETE", null, fileID, 0, 0, null, null);
-					DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
-				} catch (IOException e) {e.printStackTrace();}
+				result = fManager.deleteAllChunks(fileID);
+				if(result != FileManager.returnTypes.FAILURE) {
+					try {
+						Packet pack = new Packet("DELETE", null, fileID, 0, 0, null, null);
+						DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
+					} catch (IOException e) {e.printStackTrace();}
+				}
 			}
 		}
 	}
