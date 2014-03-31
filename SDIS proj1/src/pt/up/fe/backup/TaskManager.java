@@ -33,7 +33,7 @@ public class TaskManager {
 		case STORECHUNK:
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), chunk));
 		case REMOVE:
-			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
+			return executor.submit(new RemoveTask(dbs.getFManager()));
 		default:
 			return null;
 		}
@@ -46,7 +46,7 @@ public class TaskManager {
 		case RESTORECHUNK:
 			return executor.submit(new RestoreChunkTask(dbs.getFManager(), fileID, chunkNo));
 		case REMOVE:
-			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
+			return executor.submit(new RemoveTask(dbs.getFManager()));
 		default:
 			return null;
 		}
