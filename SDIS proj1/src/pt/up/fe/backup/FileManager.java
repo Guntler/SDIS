@@ -174,6 +174,7 @@ public class FileManager {
 				int bytesRead = 0;
 				int prevBytesRead = 0;
 				int chunkCount = 0;
+
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, Arrays.copyOfRange(buffer, 0, bytesRead), filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
@@ -232,7 +233,6 @@ public class FileManager {
 					out.write(c.getData());
 				out.close();
 				c.eraseData();
-				c.setCurrRepDeg(1);
 				this.backedUpChunks.add(c);
 				this.currSize += c.getSize();
 				this.nextAvailableFileNo++;
@@ -284,7 +284,7 @@ public class FileManager {
 	 * @return
 	 */
 	public BackupChunk getChunk(byte[] fileID, int chunkNo) {
-		String recID = Packet.bytesToHex(fileID).toUpperCase();
+		String recID = Packet.bytesToHex(fileID);
 		for(BackupChunk chunk : backedUpChunks) {
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
@@ -447,22 +447,18 @@ public class FileManager {
 	}
 	
 	public returnTypes writeChunk(BackupChunk chunk) {
-		System.out.println("HERE");
 		String recID = Packet.bytesToHex(chunk.getFileID());
 		for(BackupFile file : files) {
 			String comID = Packet.bytesToHex(file.getFileID());
-			System.out.println("HERE234567");
 			if(comID.equals(recID)) {
-				System.out.println("HEREPPPP");
 				File restoredFile = new File(file.getFilename());
-				System.out.println("HEREEEEEEEEEEE");
 				if(!restoredFile.exists())
 					try {restoredFile.createNewFile();} catch (IOException e) {e.printStackTrace();}
 				
 				try {
-					System.out.println("HERERRRRRR");
 					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile, true));
 					buffOut.write(chunk.getData());
+					System.out.println(chunk.getSize());
 					buffOut.flush();
 					buffOut.close();
 					updateLog();
