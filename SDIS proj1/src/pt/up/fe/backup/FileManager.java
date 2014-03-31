@@ -347,13 +347,11 @@ public class FileManager {
 		for(BackupFile file : files) {
 			String comID = Packet.bytesToHex(file.getFileID());
 			if(comID.equals(recID)) {
-				boolean success = (new File (file.getFilename())).delete();
+				new File (file.getFilename()).delete();
+				boolean success = files.remove(file);
 				if(success) {
-					success = files.remove(fileID);
-					if(success) {
-						updateLog();
-						return returnTypes.SUCCESS;
-					}
+					updateLog();
+					return returnTypes.SUCCESS;
 				}
 			}
 		}
@@ -459,7 +457,6 @@ public class FileManager {
 				try {
 					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile, true));
 					buffOut.write(chunk.getData());
-					System.out.println(chunk.getSize());
 					buffOut.flush();
 					buffOut.close();
 					updateLog();

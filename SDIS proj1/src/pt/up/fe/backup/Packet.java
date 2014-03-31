@@ -52,7 +52,7 @@ public class Packet {
 			this.data = data;
 			String msg = new String(header, StandardCharsets.US_ASCII);
 			
-			if(msg.contains("PUTCHUNK")) {
+			if(msg.split(" ")[0].equals("PUTCHUNK")) {
 				this.packetType = "PUTCHUNK";
 				String[] packOptions = msg.split(" ");
 				String version = packOptions[1];
@@ -64,7 +64,7 @@ public class Packet {
 				this.chunkNo = Integer.parseInt(chunkNo);
 				this.replicationDeg = Integer.parseInt(repDeg.split("\\r\\n")[0]);
 			}
-			else if(msg.contains("CHUNK")) {
+			else if(msg.split(" ")[0].equals("CHUNK")) {
 				this.packetType = "CHUNK";
 				String[] packOptions = msg.split(" ");
 				String version = packOptions[1];
@@ -75,7 +75,7 @@ public class Packet {
 				this.version = version;
 				this.chunkNo = Integer.parseInt(chunkNo.split("\\r\\n")[0]);
 			}
-			else if(msg.contains("GETCHUNK")) {
+			else if(msg.split(" ")[0].equals("GETCHUNK")) {
 				this.packetType = "GETCHUNK";
 				String[] packOptions = msg.split(" ");
 				String version = packOptions[1];
@@ -188,9 +188,9 @@ public class Packet {
 		byte[] buf = null;
 		String msg = new String();
 		msgArgs.add(packetType);
-		if(!version.equals(null))
+		if(version !=null)
 			msgArgs.add(version);
-		if(!fileID.equals(null)) 
+		if(fileID != null) 
 			msgArgs.add(bytesToHex(fileID).toLowerCase());
 		
 		if(chunkNo != -1)
