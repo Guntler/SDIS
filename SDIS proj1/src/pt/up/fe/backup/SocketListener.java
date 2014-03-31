@@ -33,7 +33,6 @@ public class SocketListener implements Runnable {
 				socket.receive(packet);
 				byte[] data = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 				
-				//Problem with parsing may derive from this, because the header isn't codified, but becomes it
 				String packetString = new String(data, StandardCharsets.ISO_8859_1);
 				System.out.println("Received the following packet: \n" + packetString.split("\\r\\n\\r\\n")[0]);
 				manager.addPacketToReceived(new Packet(data, packet.getAddress()));

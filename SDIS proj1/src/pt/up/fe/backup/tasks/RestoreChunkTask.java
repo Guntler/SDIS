@@ -26,18 +26,19 @@ public class RestoreChunkTask extends Task {
 		try {
 			Packet pack = new Packet("GETCHUNK", "1.0", fileID, chunkNo, 0, null, null);
 			DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MC);
-
+			
 			do {
 				try {
 					Thread.sleep(waitTime);
 				} catch (InterruptedException e) {e.printStackTrace();}
-
+				
 				for(Packet p : messages) {
-					if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo) {
+					if(p.getPacketType().equals("CHUNK") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(this.fileID)) && p.getChunkNo() == this.chunkNo) {
 						BackupChunk chunk = p.getChunk();
-						fManager.writeChunk(chunk);
-						if(chunk.getSize() < BackupChunk.maxSize )
-							DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("FINISHRESTORE", "", chunk.getFileID(), -1, 0, null, null));
+						System.out.println("Before write chunk");
+						DistributedBackupSystem.fManager.writeChunk(chunk);
+						/*if(chunk.getSize() < BackupChunk.maxSize )
+							DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("FINISHRESTORE", "", chunk.getFileID(), -1, 0, null, null));*/
 						done = true;
 					}
 				}

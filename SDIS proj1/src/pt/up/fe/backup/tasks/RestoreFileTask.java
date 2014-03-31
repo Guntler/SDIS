@@ -22,16 +22,18 @@ public class RestoreFileTask extends Task{
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
 		int curChunk=0;
 		if(file != null) {
-			while(!done) {
+			System.out.println("File exists");
+			//while(!done) {
+			for(curChunk=0;curChunk<file.getNumChunks();curChunk++) {
 				try {
 					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.RESTORECHUNK, file.getFileID(), curChunk).get();
 				} catch (InterruptedException | ExecutionException e) {e.printStackTrace();}
-				curChunk++;
+				/*curChunk++;
 				
 				for(Packet p : messages) {
 					if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
 						done = true;
-				}
+				}*/
 			}
 		}
 	}
