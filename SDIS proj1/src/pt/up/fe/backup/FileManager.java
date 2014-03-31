@@ -233,6 +233,7 @@ public class FileManager {
 					out.write(c.getData());
 				out.close();
 				c.eraseData();
+				c.setCurrRepDeg(1);
 				this.backedUpChunks.add(c);
 				this.currSize += c.getSize();
 				this.nextAvailableFileNo++;

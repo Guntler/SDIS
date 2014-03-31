@@ -90,4 +90,8 @@ public class BackupChunk {
 	public void eraseData() {
 		this.data = null;
 	}
+
+	public void setCurrRepDeg(int i) {
+		this.curReplicationDegree = i;
+	}
 }

@@ -229,13 +229,16 @@ public class Packet {
 	}
 	
 	public static byte[] hexToByte(String s) {
-	    return DatatypeConverter.parseHexBinary(s);
+		return DatatypeConverter.parseHexBinary(s);
 	}
-	
+
 	public BackupChunk getChunk() {
-		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
+		if(data != null)
+			return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
+		else
+			return new BackupChunk(fileID, chunkNo, data, null, 0,replicationDeg, 1, null);
 	}
-	
+
 	public InetAddress getSenderAddress() {
 		return addr;
 	}
