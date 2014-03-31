@@ -172,14 +172,23 @@ public class FileManager {
 				byte[] buffer = new byte[BackupChunk.maxSize];
 				BufferedInputStream reader = new BufferedInputStream(new FileInputStream(filename));
 				int bytesRead = 0;
+				int prevBytesRead = 0;
 				int chunkCount = 0;
 
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, Arrays.copyOfRange(buffer, 0, bytesRead), filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+					prevBytesRead = bytesRead;
 				}
 				reader.close();
+				
+				if(prevBytesRead == BackupChunk.maxSize) {
+					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, null, filename, 0, replicationDegree, 1, null);
+					chunkCount++;
+					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+				}
+				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
 				files.add(newFile);
 				updateLog();
@@ -220,7 +229,8 @@ public class FileManager {
 
 			try {
 				FileOutputStream out = new FileOutputStream("storage/"+name);
-				out.write(c.getData());
+				if(c.getData() != null)
+					out.write(c.getData());
 				out.close();
 				c.eraseData();
 				this.backedUpChunks.add(c);
@@ -282,12 +292,15 @@ public class FileManager {
 
 				try {
 					@SuppressWarnings("resource")
-					BufferedInputStream reader = new BufferedInputStream(new FileInputStream(chunk.getFilename()));
+					BufferedInputStream reader = new BufferedInputStream(new FileInputStream("storage/" + chunk.getFilename()));
 					int bytesRead = 0;
 
 					bytesRead = reader.read(body,0,BackupChunk.maxSize);
+					byte[] arr = null;
+					if(bytesRead > 0)
+						arr = Arrays.copyOfRange(body, 0, bytesRead);
 					
-					return new BackupChunk(chunk.getFileID(), chunk.getChunkNo(), Arrays.copyOfRange(body, 0, bytesRead), chunk.getFilename(), bytesRead, chunk.getWantedReplicationDegree(), chunk.getRepDeg(), null);
+					return new BackupChunk(chunk.getFileID(), chunk.getChunkNo(), arr, chunk.getFilename(), bytesRead, chunk.getWantedReplicationDegree(), chunk.getRepDeg(), null);
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;

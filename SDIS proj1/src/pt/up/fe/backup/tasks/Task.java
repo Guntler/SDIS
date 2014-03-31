@@ -1,8 +1,6 @@
 package pt.up.fe.backup.tasks;
 
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 

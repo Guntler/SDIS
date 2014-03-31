@@ -10,13 +10,8 @@ import pt.up.fe.backup.FileManager;
  *
  */
 public class RemoveTask extends Task {
-	private byte[] fileID;
-	private int chunkNo;
-
-	public RemoveTask(FileManager fManager, byte[] fileID, int chunkNo) {
+	public RemoveTask(FileManager fManager) {
 		super(fManager);
-		this.fileID = fileID;
-		this.chunkNo = chunkNo;
 	}
 
 	@Override
