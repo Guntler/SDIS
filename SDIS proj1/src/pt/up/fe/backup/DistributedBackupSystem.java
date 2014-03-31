@@ -96,9 +96,9 @@ public class DistributedBackupSystem {
 				}
 				else if(commands.size() == 2 && commands.get(0).equals("setAllocatedMemory")) {
 					try {
-						int bytes = Integer.parseInt(commands.get(1));
+						long bytes = Long.parseLong(commands.get(1));
 						System.out.println("Starting space reclaiming...");
-						tManager.executeTask(TaskManager.TaskTypes.REMOVE,"", bytes).get();
+						tManager.executeTask(TaskManager.TaskTypes.SETMEMORY,null, bytes).get();
 						System.out.println("done...");
 					} catch (Exception e) {e.printStackTrace();}
 				}
