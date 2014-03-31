@@ -35,8 +35,8 @@ public class RestoreChunkTask extends Task {
 				for(Packet p : messages) {
 					if(p.getPacketType().equals("CHUNK") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(this.fileID)) && p.getChunkNo() == this.chunkNo) {
 						BackupChunk chunk = p.getChunk();
-						System.out.println("Before write chunk");
-						DistributedBackupSystem.fManager.writeChunk(chunk);
+						if(chunk.getSize() != 0)
+							DistributedBackupSystem.fManager.writeChunk(chunk);
 						/*if(chunk.getSize() < BackupChunk.maxSize )
 							DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("FINISHRESTORE", "", chunk.getFileID(), -1, 0, null, null));*/
 						done = true;

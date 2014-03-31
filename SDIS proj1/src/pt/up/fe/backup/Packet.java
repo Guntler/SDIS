@@ -233,7 +233,10 @@ public class Packet {
 	}
 	
 	public BackupChunk getChunk() {
-		return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
+		if(data != null)
+			return new BackupChunk(fileID, chunkNo, data, null, data.length,replicationDeg, 1, null);
+		else
+			return new BackupChunk(fileID, chunkNo, null, null, 0,replicationDeg, 1, null);
 	}
 	
 	public InetAddress getSenderAddress() {

@@ -434,22 +434,18 @@ public class FileManager {
 	}
 	
 	public returnTypes writeChunk(BackupChunk chunk) {
-		System.out.println("HERE");
 		String recID = Packet.bytesToHex(chunk.getFileID());
 		for(BackupFile file : files) {
 			String comID = Packet.bytesToHex(file.getFileID());
-			System.out.println("HERE234567");
 			if(comID.equals(recID)) {
-				System.out.println("HEREPPPP");
 				File restoredFile = new File(file.getFilename());
-				System.out.println("HEREEEEEEEEEEE");
 				if(!restoredFile.exists())
 					try {restoredFile.createNewFile();} catch (IOException e) {e.printStackTrace();}
 				
 				try {
-					System.out.println("HERERRRRRR");
-					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile));
+					BufferedOutputStream buffOut=new BufferedOutputStream(new FileOutputStream(restoredFile, true));
 					buffOut.write(chunk.getData());
+					System.out.println(chunk.getSize());
 					buffOut.flush();
 					buffOut.close();
 					updateLog();
