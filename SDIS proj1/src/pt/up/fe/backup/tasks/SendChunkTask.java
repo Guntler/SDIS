@@ -30,20 +30,22 @@ public class SendChunkTask extends Task {
 
 		BackupChunk chunk = fManager.getChunk(fileID, chunkNo);
 		
-		try {
-			int waitTime = (int)(Math.random() * 400);
+		if(chunk != null) {
 			try {
-				Thread.sleep(waitTime);
-			} catch (InterruptedException e1) {e1.printStackTrace();}
-			
-			for(Packet p : messages)
-				if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo)
-					done = true;
-			
-			if(!done)
-				DistributedBackupSystem.cManager.sendPacket(new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData(), null),
-															CommunicationManager.Channels.MDR);
-		} catch (IOException e) {e.printStackTrace();}
+				int waitTime = (int)(Math.random() * 400);
+				try {
+					Thread.sleep(waitTime);
+				} catch (InterruptedException e1) {e1.printStackTrace();}
+				
+				for(Packet p : messages)
+					if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo)
+						done = true;
+				
+				if(!done)
+					DistributedBackupSystem.cManager.sendPacket(new Packet("CHUNK", "1.0", fileID, chunkNo, 0, chunk.getData(), null),
+																CommunicationManager.Channels.MDR);
+			} catch (IOException e) {e.printStackTrace();}
+		}
 	}
 
 }
