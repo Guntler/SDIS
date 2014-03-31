@@ -53,6 +53,13 @@ public class CommunicationManager implements Runnable {
 		Thread threadMDR = new Thread(listenerMDR);
 		threadMC.start();threadMDB.start();threadMDR.start();
 
+		if(DistributedBackupSystem.enhancementsOn) {
+			Packet pack = new Packet("CHECKCHUNK", "1.0", null, null);
+			try {
+				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDB);
+			} catch (IOException e) {e.printStackTrace();}
+		}
+			
 		while(!done) {
 			if(receivedQueue.size() != 0) {
 				synchronized(this) {
