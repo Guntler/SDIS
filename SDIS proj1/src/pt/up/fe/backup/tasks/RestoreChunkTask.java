@@ -36,8 +36,9 @@ public class RestoreChunkTask extends Task {
 					if(p.getPacketType().equals("CHUNK") && p.getFileID().equals(this.fileID) && p.getChunkNo() == this.chunkNo) {
 						BackupChunk chunk = p.getChunk();
 						fManager.writeChunk(chunk);
+						if(chunk.getSize() < BackupChunk.maxSize )
+							DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("FINISHRESTORE", "", chunk.getFileID(), -1, 0, null, null));
 						done = true;
-						//write info to log
 					}
 				}
 
