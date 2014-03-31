@@ -207,31 +207,33 @@ public class FileManager {
 			if(currSize + c.getSize() > maxSize)
 				return returnTypes.FAILURE;
 		}
-		
-		String name = "";
-		name += "chunk-";
-		name += this.nextAvailableFileNo;
 
-		c.setFilename(name);
+		synchronized(this) {
+			String name = "";
+			name += "chunk-";
+			name += this.nextAvailableFileNo;
 
-		File storeDir = new File("storage");
-		storeDir.mkdir();
+			c.setFilename(name);
 
-		try {
-			FileOutputStream out = new FileOutputStream("storage/"+name);
-			out.write(c.getData());
-			out.close();
-			c.eraseData();
-			this.backedUpChunks.add(c);
-			this.currSize += c.getSize();
-			this.nextAvailableFileNo++;
-			updateLog();
+			File storeDir = new File("storage");
+			storeDir.mkdir();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return returnTypes.FAILURE;
+			try {
+				FileOutputStream out = new FileOutputStream("storage/"+name);
+				out.write(c.getData());
+				out.close();
+				c.eraseData();
+				this.backedUpChunks.add(c);
+				this.currSize += c.getSize();
+				this.nextAvailableFileNo++;
+				updateLog();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				return returnTypes.FAILURE;
+			}
 		}
-		
+
 		return returnTypes.SUCCESS;
 	}
 
@@ -317,7 +319,7 @@ public class FileManager {
 					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
 					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
 				}
-				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
+				else {System.out.println("Error occurred while deleting the file"); return returnTypes.FAILURE;}
 				
 				return returnTypes.SUCCESS;
 			}
@@ -423,7 +425,7 @@ public class FileManager {
 			
 			if(deleteChunk(maxRepDeg.getFileID(), maxRepDeg.getChunkNo()) == returnTypes.SUCCESS) {
 				try {
-					DistributedBackupSystem.cManager.sendPacket(new Packet("REMOVED", "1.0", maxRepDeg.getFileID(), maxRepDeg.getChunkNo(), -1, null, null), CommunicationManager.Channels.MC);
+					DistributedBackupSystem.cManager.sendPacket(new Packet("REMOVED", "1.0", maxRepDeg.getFileID(), maxRepDeg.getChunkNo(), 0, null, null), CommunicationManager.Channels.MC);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
