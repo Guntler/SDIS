@@ -50,7 +50,7 @@ public class Packet {
 		else {
 		
 			this.data = data;
-			String msg = new String(header, StandardCharsets.ISO_8859_1);
+			String msg = new String(header, StandardCharsets.US_ASCII);
 			
 			if(msg.contains("PUTCHUNK")) {
 				this.packetType = "PUTCHUNK";

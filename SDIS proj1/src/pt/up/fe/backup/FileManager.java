@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class FileManager {
 	public static int bytesToRead = 1048576;
 	public enum returnTypes {
-	    SUCCESS, FILE_EXISTS, FILE_DOES_NOT_EXIST, FAILURE
+	    SUCCESS, FILE_EXISTS, FILE_DOES_NOT_EXIST, FAILURE, WAIT
 	}
 	private CopyOnWriteArrayList<BackupFile> files;
 	private CopyOnWriteArrayList<BackupChunk> backedUpChunks;
@@ -233,6 +233,7 @@ public class FileManager {
 					out.write(c.getData());
 				out.close();
 				c.eraseData();
+				c.setCurrRepDeg(1);
 				this.backedUpChunks.add(c);
 				this.currSize += c.getSize();
 				this.nextAvailableFileNo++;

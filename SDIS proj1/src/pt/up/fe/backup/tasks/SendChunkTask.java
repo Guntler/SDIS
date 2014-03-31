@@ -28,12 +28,9 @@ public class SendChunkTask extends Task {
 	public void run() {
 		
 		boolean done = false;
-		System.out.println("Wassup");
 		BackupChunk chunk = DistributedBackupSystem.fManager.getChunk(fileID, chunkNo);
-		System.out.println("nigga");
 		if(chunk != null) {
 			try {
-				System.out.println("hi");
 				int waitTime = (int)(Math.random() * 400);
 				try {
 					Thread.sleep(waitTime);
