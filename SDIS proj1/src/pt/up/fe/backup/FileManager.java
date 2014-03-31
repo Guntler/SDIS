@@ -453,6 +453,12 @@ public class FileManager {
 		
 		return returnTypes.FAILURE;
 	}
+	
+	public void printAllFiles() {
+		for(BackupFile file : files) {
+			file.printAllInfo();
+		}
+	}
 
 	public CopyOnWriteArrayList<BackupFile> getFiles() {
 		return files;

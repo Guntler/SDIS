@@ -25,9 +25,7 @@ public class StoreChunkTask extends Task {
 			int waitTime = (int)(Math.random() * 400);
 			try {
 				Thread.sleep(waitTime);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
+			} catch (InterruptedException e1) {e1.printStackTrace();}
 		
 			try {
 				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), 0, null, null), CommunicationManager.Channels.MC);
