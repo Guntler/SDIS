@@ -1,12 +1,13 @@
 Turma 6 e 4, Daniel Pereira (201109110) e João Marinheiro (201101774)
 
-O programa deve ser inicializado compilando primeiro o ficheiro DistributedBackupSystem.java:
+Recomenda-se que o programa seja compilado através da ferramenta Eclipse importando a pasta src
+presente nesta submissão para um novo projecto Java. Deve depois, com um clique direito no projecto,
+escolher 'Export...', expandir a pasta Java e escolher 'Runnable JAR File'. Convém salientar que o directório
+de java deve estar na variável de ambiente %PATH.
+Depois de escolhido o nome e a localização do ficheiro JAR, deve aceder-se à pasta através da linha
+de comandos e iniciar o programa com:
 
-% javac -g DistributedBackupSystem.java
-
-Após a finalização da compilação, pode ser executado o programa com o seguinte formato:
-
-% java DistributedBackupSystem <IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>
+% java -jar *nome atribuído ao jar*.jar <IPMC> <portMC> <ipMDB> <portMDB> <ipMDR> <portMDR>
 
 Para executar os protocolos do programa, é necessário fornecer ao mesmo as instruções necessárias,
 já depois de ter iniciado o programa:

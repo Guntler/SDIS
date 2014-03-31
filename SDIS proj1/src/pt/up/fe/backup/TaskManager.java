@@ -16,7 +16,7 @@ import pt.up.fe.backup.tasks.SetAllocatedMemoryTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK, RESTOREFILE, SETMEMORY};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK, RESTOREFILE, SETMEMORY,CHECKCHUNK};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
@@ -67,6 +67,10 @@ public class TaskManager {
 			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		else if (packet.packetType.equals("STORED")) {
+			executor.messageActiveTasks(packet);
+			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
+		}
+		else if (packet.packetType.equals("CHECKCHUNK")) {
 			executor.messageActiveTasks(packet);
 			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}

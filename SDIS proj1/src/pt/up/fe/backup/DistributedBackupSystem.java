@@ -10,6 +10,7 @@ public class DistributedBackupSystem {
 	static public FileManager fManager = null;
 	static public TaskManager tManager = null;
 	static public CommunicationManager cManager = null;
+	static public boolean enhancementsOn = false;
 	
 	protected static ArrayList<String> mcastArgs = new ArrayList<String>();
 	
@@ -61,6 +62,7 @@ public class DistributedBackupSystem {
 				System.out.println("'allocatedMemory' to print the current value for allocated memory.");
 				System.out.println("'usedMemory' to print the current value of used up memory.");
 				System.out.println("'filesStored' to print the list of files currently in storage.");
+				System.out.println("'toggleEnhancements' to toggle usage of enhancements.");
 				System.out.println("'quit' to exit the program.");
 			}
 			else {
@@ -112,6 +114,16 @@ public class DistributedBackupSystem {
 					System.out.println("Files currently in storage:");
 					System.out.println("Filename      Replication Degree      Number of Chunks");
 					DistributedBackupSystem.fManager.printAllFiles();
+				}
+				else if(commands.size() == 1 && commands.get(0).equals("toggleEnhancements")) {
+					if(enhancementsOn) {
+						enhancementsOn = false;
+						System.out.println("Enhancements are not in use.");
+					}
+					else {
+						enhancementsOn = true;
+						System.out.println("Enhancements are in use.");
+					}
 				}
 				else {
 					System.out.println("Unknown command. Type 'help' for a list of commands.");
