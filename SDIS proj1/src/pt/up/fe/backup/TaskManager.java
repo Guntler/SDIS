@@ -63,8 +63,6 @@ public class TaskManager {
 		else if (packet.packetType.equals("DELETE")) {
 			return executor.submit(new HandleDeleteTask(dbs.getFManager(), packet.getFileID()));
 		}
-		//TODO
-		//IF A PUTCHUNK TASK IS TAKING PLACE, THIS SHOULD NOT RUN
 		else if (packet.packetType.equals("REMOVED")) {
 			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
