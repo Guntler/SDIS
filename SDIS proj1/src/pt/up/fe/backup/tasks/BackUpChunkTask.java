@@ -47,7 +47,7 @@ public class BackUpChunkTask extends Task {
 				}
 				else {
 					System.out.println("Chunk was not successfully stored");
-					DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("DELETE", "1.0", chunk.getFileID(), 0, 0, null, null));
+					DistributedBackupSystem.tManager.sendMessageToActiveTasks(new Packet("DELETE", "1.0", chunk.getFileID(), -1, 0, null, null));
 					done = true;
 				}
 				

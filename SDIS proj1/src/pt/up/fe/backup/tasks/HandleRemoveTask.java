@@ -4,6 +4,8 @@ import java.net.InetAddress;
 
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
+import pt.up.fe.backup.Packet;
+import pt.up.fe.backup.TaskManager;
 
 /**
  * Takes place when a packet REMOVED is received. Deletes the chunk from memory and from the file system.
@@ -24,6 +26,21 @@ public class HandleRemoveTask extends Task {
 	@Override
 	public void run() {
 		DistributedBackupSystem.fManager.updateRepDegree(fileID, chunkNo, addr, false);
-		DistributedBackupSystem.fManager.assureChunkRepDegree(fileID, chunkNo); //TODO checks if chunk repDegree is too small and if yes waits 0-400 ms, checks messages to see if it received a putchunk (make putchunk go to messages) and if not starts backup subprotocol
+		if(!DistributedBackupSystem.fManager.chunkCorrectRepDegree(fileID, chunkNo)) {
+			int waitTime = (int)(Math.random() * 400);
+			try {
+				Thread.sleep(waitTime);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
+			for(Packet p : messages) {
+				if(p.getPacketType().equals("PUTCHUNK") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(fileID)) && chunkNo == p.getChunkNo()) {
+					return;
+				}
+			}
+			
+			DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.BACKUPCHUNK, DistributedBackupSystem.fManager.getChunk(fileID, chunkNo));
+		}
 	}
 }

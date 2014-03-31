@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class FileManager {
@@ -23,15 +24,15 @@ public class FileManager {
 	public enum returnTypes {
 	    SUCCESS, FILE_EXISTS, FILE_DOES_NOT_EXIST, FAILURE
 	}
-	private ArrayList<BackupFile> files;
-	private ArrayList<BackupChunk> backedUpChunks;
+	private CopyOnWriteArrayList<BackupFile> files;
+	private CopyOnWriteArrayList<BackupChunk> backedUpChunks;
 	private long maxSize, currSize;
 	private DistributedBackupSystem dbs;
 	private int nextAvailableFileNo;
 	
 	public FileManager(DistributedBackupSystem dbs) {
-		files = new ArrayList<BackupFile>();
-		backedUpChunks = new ArrayList<BackupChunk>();
+		files = new CopyOnWriteArrayList<BackupFile>();
+		backedUpChunks = new CopyOnWriteArrayList<BackupChunk>();
 		this.dbs = dbs;
 		
 		readLog();
@@ -178,13 +179,10 @@ public class FileManager {
 					chunkCount++;
 					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
-				System.out.println("Before file");
 				reader.close();
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
-				System.out.println("Stuff: " + newFile.getNumChunks());
 				files.add(newFile);
 				updateLog();
-				System.out.println("after log");
 
 			} catch(Exception e) {
 				System.out.println("Error reading file: " + e.toString());
@@ -192,7 +190,7 @@ public class FileManager {
 		}
 	}
 	
-	synchronized public returnTypes saveChunk(BackupChunk c) {
+	public returnTypes saveChunk(BackupChunk c) {
 		String recID = Packet.bytesToHex(c.getFileID());
 		for(BackupChunk chunk : backedUpChunks) {
 			String comID = Packet.bytesToHex(chunk.getFileID());
@@ -206,9 +204,8 @@ public class FileManager {
 				DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.REMOVE, null).get();
 			} catch (InterruptedException e) {e.printStackTrace();} catch (ExecutionException e) {e.printStackTrace();}
 			
-			
-			//TODO checks if there is enough space after remove and if so proceeds with backup, returns failure otherwise
-			return returnTypes.FAILURE;
+			if(currSize + c.getSize() > maxSize)
+				return returnTypes.FAILURE;
 		}
 		
 		String name = "";
@@ -224,6 +221,7 @@ public class FileManager {
 			FileOutputStream out = new FileOutputStream("storage/"+name);
 			out.write(c.getData());
 			out.close();
+			c.eraseData();
 			this.backedUpChunks.add(c);
 			this.currSize += c.getSize();
 			this.nextAvailableFileNo++;
@@ -278,7 +276,20 @@ public class FileManager {
 		for(BackupChunk chunk : backedUpChunks) {
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID) && chunk.getChunkNo() == chunkNo) {
-				return chunk;
+				byte[] body = new byte[BackupChunk.maxSize];
+
+				try {
+					@SuppressWarnings("resource")
+					BufferedInputStream reader = new BufferedInputStream(new FileInputStream(chunk.getFilename()));
+					int bytesRead = 0;
+
+					bytesRead = reader.read(body,0,BackupChunk.maxSize);
+					
+					return new BackupChunk(chunk.getFileID(), chunk.getChunkNo(), Arrays.copyOfRange(body, 0, bytesRead), chunk.getFilename(), bytesRead, chunk.getWantedReplicationDegree(), chunk.getRepDeg(), null);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
+				} 
 			}
 		}
 		
@@ -389,12 +400,35 @@ public class FileManager {
 		}
 	}
 	
-	public void assureChunkRepDegree(byte[] fileID, int chunkNo) {
+	public boolean chunkCorrectRepDegree(byte[] fileID, int chunkNo) {
+		for(BackupChunk chunk : backedUpChunks) {
+			if(Packet.bytesToHex(chunk.getFileID()).equals(Packet.bytesToHex(fileID)) && chunkNo == chunk.getChunkNo()) {
+				if(chunk.getRepDeg() < chunk.getWantedReplicationDegree()) {
+					return false;
+				}
+			}
+		}
 		
+		return true;
 	}
 	
 	public void releaseSpace() {
-		
+		while(currSize > maxSize) {
+			BackupChunk maxRepDeg = null;
+			
+			for(BackupChunk chunk : backedUpChunks) {
+				if(maxRepDeg == null || chunk.getRepDeg() > maxRepDeg.getRepDeg())
+					maxRepDeg = chunk;
+			}
+			
+			if(deleteChunk(maxRepDeg.getFileID(), maxRepDeg.getChunkNo()) == returnTypes.SUCCESS) {
+				try {
+					DistributedBackupSystem.cManager.sendPacket(new Packet("REMOVED", "1.0", maxRepDeg.getFileID(), maxRepDeg.getChunkNo(), -1, null, null), CommunicationManager.Channels.MC);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public returnTypes writeChunk(BackupChunk chunk) {
@@ -420,11 +454,11 @@ public class FileManager {
 		return returnTypes.FAILURE;
 	}
 
-	public ArrayList<BackupFile> getFiles() {
+	public CopyOnWriteArrayList<BackupFile> getFiles() {
 		return files;
 	}
 
-	public void setFiles(ArrayList<BackupFile> files) {
+	public void setFiles(CopyOnWriteArrayList<BackupFile> files) {
 		this.files = files;
 	}
 }

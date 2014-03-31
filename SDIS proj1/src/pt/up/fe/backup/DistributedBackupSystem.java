@@ -99,7 +99,7 @@ public class DistributedBackupSystem {
 				else if(commands.size() == 2 && commands.get(0).equals("remove")) {
 					try {
 						System.out.println("Starting space reclaiming...");
-						tManager.executeTask(TaskManager.TaskTypes.DELETEFILE,commands.get(1), 0);
+						tManager.executeTask(TaskManager.TaskTypes.SETMEMORY,null, Long.parseLong(commands.get(1)));
 						System.out.println("done...");
 					} catch (Exception e) {
 						e.printStackTrace();

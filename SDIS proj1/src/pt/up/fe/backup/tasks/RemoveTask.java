@@ -1,11 +1,7 @@
 package pt.up.fe.backup.tasks;
 
-import java.io.IOException;
-
-import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
-import pt.up.fe.backup.Packet;
 
 /**
  * Takes place when the User issues a REMOVED packet. Deletes the chunk from memory and from the file system,

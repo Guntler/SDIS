@@ -86,4 +86,8 @@ public class BackupChunk {
 	public void decreaseRepDegree() {
 		this.curReplicationDegree--;
 	}
+
+	public void eraseData() {
+		this.data = null;
+	}
 }

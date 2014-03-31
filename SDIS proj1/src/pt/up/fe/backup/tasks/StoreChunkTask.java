@@ -30,7 +30,7 @@ public class StoreChunkTask extends Task {
 			}
 		
 			try {
-				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), chunk.getWantedReplicationDegree(), null, null), CommunicationManager.Channels.MC);
+				DistributedBackupSystem.cManager.sendPacket(new Packet("STORED", "1.0", chunk.getFileID(), chunk.getChunkNo(), 0, null, null), CommunicationManager.Channels.MC);
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}

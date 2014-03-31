@@ -12,10 +12,11 @@ import pt.up.fe.backup.tasks.RemoveTask;
 import pt.up.fe.backup.tasks.RestoreChunkTask;
 import pt.up.fe.backup.tasks.RestoreFileTask;
 import pt.up.fe.backup.tasks.SendChunkTask;
+import pt.up.fe.backup.tasks.SetAllocatedMemoryTask;
 import pt.up.fe.backup.tasks.StoreChunkTask;
 
 public class TaskManager {
-	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK, RESTOREFILE};
+	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK, RESTOREFILE, SETMEMORY};
 	
 	private DistributedBackupSystem dbs;
 	TaskExecutor executor = null;
@@ -31,17 +32,6 @@ public class TaskManager {
 			return executor.submit(new BackUpChunkTask(dbs.getFManager(), chunk));
 		case STORECHUNK:
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), chunk));
-		case REMOVE:
-			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
-		default:
-			return null;
-		}
-	}
-
-	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo, byte[] body) {
-		switch(type) {
-		case SENDCHUNK:
-			return executor.submit(new SendChunkTask(dbs.getFManager(), fileID, chunkNo));
 		case REMOVE:
 			return executor.submit(new RemoveTask(dbs.getFManager(), null, 0));
 		default:
@@ -64,6 +54,7 @@ public class TaskManager {
 	
 	synchronized public Future<?> executeTask(Packet packet) {
 		if(packet.packetType.equals("PUTCHUNK")) {
+			executor.messageActiveTasks(packet);
 			return executor.submit(new StoreChunkTask(dbs.getFManager(), packet.getChunk()));
 		}
 		else if (packet.packetType.equals("GETCHUNK")) {
@@ -95,15 +86,18 @@ public class TaskManager {
 		executor.messageActiveTasks(p);
 	}
 
-	synchronized public Future<?> executeTask(TaskTypes type, String name, int repDeg) {
+	synchronized public Future<?> executeTask(TaskTypes type, String name, long repDeg) {
 		if(type == TaskTypes.BACKUPFILE) {
-			return executor.submit(new BackupFileTask(null, name, repDeg));
+			return executor.submit(new BackupFileTask(null, name, (int)repDeg));
 		}
 		else if(type == TaskTypes.RESTOREFILE) {
 			return executor.submit(new RestoreFileTask(null, name));
 		}
 		else if(type == TaskTypes.DELETEFILE) {
 			return executor.submit(new DeleteFileTask(null, name));
+		}
+		else if(type == TaskTypes.SETMEMORY) {
+			return executor.submit(new SetAllocatedMemoryTask(null, repDeg));
 		}
 		else return null;
 			
