@@ -255,6 +255,7 @@ public class FileManager {
 	 */
 	public returnTypes deleteAllChunks(byte[] fileID) {
 		String recID = Packet.bytesToHex(fileID);
+		boolean found = false;
 		for(BackupChunk chunk : backedUpChunks) {
 			String comID = Packet.bytesToHex(chunk.getFileID());
 			if(comID.equals(recID)) {
@@ -266,16 +267,19 @@ public class FileManager {
 					currSize -= chunk.getSize();
 					success = backedUpChunks.remove(chunk);
 					
-					if(success) {System.out.println("The file has been successfully deleted");updateLog();}
+					if(success) {System.out.println("The file has been successfully deleted");updateLog();found = true;}
 					else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
 				}
 				else {System.out.println("Error occurred while deleting the file."); return returnTypes.FAILURE;}
 				
-				return returnTypes.SUCCESS;
+				
 			}
 		}
 		
-		return returnTypes.FILE_DOES_NOT_EXIST;
+		if(found)
+			return returnTypes.SUCCESS;
+		else
+			return returnTypes.FILE_DOES_NOT_EXIST;
 	}
 	
 	/**
