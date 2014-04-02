@@ -341,7 +341,7 @@ public class FileManager {
 
 		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
-	
+
 	public returnTypes deleteFile(byte[] fileID) {
 		String recID = Packet.bytesToHex(fileID);
 		for(BackupFile file : files) {
@@ -353,12 +353,13 @@ public class FileManager {
 					updateLog();
 					return returnTypes.SUCCESS;
 				}
+
 			}
 		}
-		
+
 		return returnTypes.FILE_DOES_NOT_EXIST;
 	}
-	
+
 	public long getMaxSize() {
 		return maxSize;
 	}

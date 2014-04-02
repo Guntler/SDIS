@@ -26,7 +26,6 @@ public class DeleteFileTask extends Task {
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
 		if(file != null) {
 			byte[] fileID = file.getFileID();
-			System.out.println("ho");
 			FileManager.returnTypes result = DistributedBackupSystem.fManager.deleteFile(fileID);
 			if(result != FileManager.returnTypes.FAILURE) {
 				result = DistributedBackupSystem.fManager.deleteAllChunks(fileID);

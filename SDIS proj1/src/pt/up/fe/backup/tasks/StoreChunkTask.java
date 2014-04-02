@@ -19,12 +19,13 @@ public class StoreChunkTask extends Task {
 
 	@Override
 	public void run() {
-		System.out.println("wtf");
-		/*int chance = 3;
+
+		int chance = 3;
 		int backupChance =(int) (Math.random() * chance);
 
 		while(backupChance != 0 && chance > 0) {
 			messages.clear();
+
 			int waitTime = (int)(Math.random() * 400);
 			try {
 				Thread.sleep(waitTime);
@@ -42,12 +43,12 @@ public class StoreChunkTask extends Task {
 				chance--;
 			
 			backupChance = (int) (Math.random() * chance);
-		}*/
+		}
 		
 		FileManager.returnTypes result = DistributedBackupSystem.fManager.saveChunk(chunk);
 		
 		if(result != FileManager.returnTypes.FAILURE) {
-			System.out.println("wtf2");
+			
 			int waitTime = (int)(Math.random() * 400);
 			try {
 				Thread.sleep(waitTime);
@@ -60,3 +61,4 @@ public class StoreChunkTask extends Task {
 	}
 
 }
+	
