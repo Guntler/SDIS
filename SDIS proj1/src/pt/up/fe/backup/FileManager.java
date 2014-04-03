@@ -408,7 +408,7 @@ public class FileManager {
 					chunk.increaseRepDegree();
 					chunk.addToStored(addr);
 				}
-				else if (alreadyStored){
+				else if (alreadyStored && !removeOrAdd){
 					chunk.decreaseRepDegree();
 				}
 

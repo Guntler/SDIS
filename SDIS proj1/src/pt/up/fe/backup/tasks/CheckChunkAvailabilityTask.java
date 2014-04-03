@@ -6,7 +6,6 @@ import pt.up.fe.backup.BackupChunk;
 import pt.up.fe.backup.BackupFile;
 import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
-import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 public class CheckChunkAvailabilityTask extends Task {

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import pt.up.fe.backup.TaskManager.TaskTypes;
+
 public class CommunicationManager implements Runnable {
 	static public enum CommandTypes {GETCHUNK, PUTCHUNK, RESTORE, REMOVED, STORED, CHUNK, DELETE};
 	static public enum Channels {MC, MDB, MDR};
@@ -50,12 +52,7 @@ public class CommunicationManager implements Runnable {
 		Thread threadMDR = new Thread(listenerMDR);
 		threadMC.start();threadMDB.start();threadMDR.start();
 
-		if(DistributedBackupSystem.enhancementsOn) {
-			Packet pack = new Packet("CHECKCHUNK", "1.0", null, null);
-			try {
-				DistributedBackupSystem.cManager.sendPacket(pack, CommunicationManager.Channels.MDB);
-			} catch (IOException e) {e.printStackTrace();}
-		}
+		DistributedBackupSystem.tManager.executeTask(TaskTypes.CHECKCHUNK,"",0);
 			
 		while(!done) {
 			if(receivedQueue.size() != 0) {

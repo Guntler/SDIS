@@ -3,6 +3,7 @@ package pt.up.fe.backup;
 import java.util.concurrent.Future;
 import pt.up.fe.backup.tasks.BackUpChunkTask;
 import pt.up.fe.backup.tasks.BackupFileTask;
+import pt.up.fe.backup.tasks.CheckChunkAvailabilityTask;
 import pt.up.fe.backup.tasks.DeleteFileTask;
 import pt.up.fe.backup.tasks.DeleteTask;
 import pt.up.fe.backup.tasks.HandleDeleteTask;
@@ -70,7 +71,7 @@ public class TaskManager {
 		}
 		else if (packet.packetType.equals("CHECKCHUNK")) {
 			executor.messageActiveTasks(packet);
-			return executor.submit(new HandleStoreTask(packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
+			return executor.submit(new CheckChunkAvailabilityTask());
 		}
 		else if (packet.packetType.equals("CHUNK")) {
 			executor.messageActiveTasks(packet);
@@ -98,6 +99,9 @@ public class TaskManager {
 		}
 		else if(type == TaskTypes.SETMEMORY) {
 			return executor.submit(new SetAllocatedMemoryTask(repDeg));
+		}
+		else if(type == TaskTypes.CHECKCHUNK) {
+			return executor.submit(new CheckChunkAvailabilityTask());
 		}
 		else return null;
 			

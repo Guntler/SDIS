@@ -10,7 +10,7 @@ public class DistributedBackupSystem {
 	static public FileManager fManager = null;
 	static public TaskManager tManager = null;
 	static public CommunicationManager cManager = null;
-	static public boolean enhancementsOn = false;
+	static public boolean enhancementsOn = true;
 	
 	protected static ArrayList<String> mcastArgs = new ArrayList<String>();
 	

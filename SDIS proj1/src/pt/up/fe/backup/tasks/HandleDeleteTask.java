@@ -1,7 +1,6 @@
 package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.DistributedBackupSystem;
-import pt.up.fe.backup.FileManager;
 
 /**
  * Deletes the file from the local system. 

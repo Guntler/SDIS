@@ -1,7 +1,6 @@
 package pt.up.fe.backup.tasks;
 
 import pt.up.fe.backup.DistributedBackupSystem;
-import pt.up.fe.backup.FileManager;
 
 /**
  * Takes place when the User issues a REMOVED packet. Deletes the chunk from memory and from the file system,

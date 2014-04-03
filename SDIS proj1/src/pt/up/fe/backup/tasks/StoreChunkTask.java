@@ -7,7 +7,6 @@ import pt.up.fe.backup.CommunicationManager;
 import pt.up.fe.backup.DistributedBackupSystem;
 import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
-import pt.up.fe.backup.FileManager.returnTypes;
 
 public class StoreChunkTask extends Task {
 	private BackupChunk chunk;

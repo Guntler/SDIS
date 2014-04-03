@@ -1,7 +1,6 @@
 package pt.up.fe.backup.tasks;
 
 import java.util.ArrayList;
-import pt.up.fe.backup.FileManager;
 import pt.up.fe.backup.Packet;
 
 public abstract class Task implements Runnable {
