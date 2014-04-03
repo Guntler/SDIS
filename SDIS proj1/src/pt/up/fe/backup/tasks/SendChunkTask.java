@@ -18,8 +18,8 @@ public class SendChunkTask extends Task {
 	private byte[] fileID;
 	private int chunkNo;
 
-	public SendChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
-		super(fManager);
+	public SendChunkTask(byte[] fileID, int chunkNo) {
+		super();
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}

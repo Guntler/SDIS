@@ -16,8 +16,8 @@ import pt.up.fe.backup.Packet;
 public class DeleteFileTask extends Task {
 	String filename;
 
-	public DeleteFileTask(FileManager fManager, String filename) {
-		super(fManager);
+	public DeleteFileTask(String filename) {
+		super();
 		this.filename= filename;
 	}
 

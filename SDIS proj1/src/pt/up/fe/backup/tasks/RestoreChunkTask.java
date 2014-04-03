@@ -12,8 +12,8 @@ public class RestoreChunkTask extends Task {
 	private byte[] fileID;
 	private int chunkNo;
 
-	public RestoreChunkTask(FileManager fManager, byte[] fileID, int chunkNo) {
-		super(fManager);
+	public RestoreChunkTask(byte[] fileID, int chunkNo) {
+		super();
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 	}

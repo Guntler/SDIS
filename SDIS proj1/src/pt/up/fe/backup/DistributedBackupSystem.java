@@ -32,9 +32,9 @@ public class DistributedBackupSystem {
 	}
 
 	public void start() throws IOException {
-		tManager = new TaskManager(this);
-		fManager = new FileManager(this);
-		cManager = new CommunicationManager(mcastArgs,this);
+		tManager = new TaskManager();
+		fManager = new FileManager();
+		cManager = new CommunicationManager(mcastArgs);
 		new Thread(cManager).start();
 
 		boolean done = false;
@@ -131,18 +131,5 @@ public class DistributedBackupSystem {
 			}
 		}
 		console.close();
-	}
-
-	
-	public FileManager getFManager() {
-		return fManager;
-	}
-	
-	public TaskManager getTManager() {
-		return tManager;
-	}
-	
-	public CommunicationManager getCManager() {
-		return cManager;
 	}
 }

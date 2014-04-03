@@ -11,8 +11,8 @@ import pt.up.fe.backup.FileManager;
 public class HandleDeleteTask extends Task {
 	private byte[] fileID;
 
-	public HandleDeleteTask(FileManager fManager, byte[] fileID) {
-		super(fManager);
+	public HandleDeleteTask(byte[] fileID) {
+		super();
 		this.fileID = fileID;
 	}
 

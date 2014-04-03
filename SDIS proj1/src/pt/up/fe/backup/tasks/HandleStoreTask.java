@@ -11,8 +11,8 @@ public class HandleStoreTask extends Task implements Runnable {
 	private int chunkNo;
 	private InetAddress addr;
 
-	public HandleStoreTask(FileManager fManager, byte[] fileID, int chunkNo, InetAddress addr) {
-		super(fManager);
+	public HandleStoreTask(byte[] fileID, int chunkNo, InetAddress addr) {
+		super();
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 		this.addr = addr;

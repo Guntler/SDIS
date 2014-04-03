@@ -27,13 +27,11 @@ public class FileManager {
 	private CopyOnWriteArrayList<BackupFile> files;
 	private CopyOnWriteArrayList<BackupChunk> backedUpChunks;
 	private long maxSize, currSize;
-	private DistributedBackupSystem dbs;
 	private int nextAvailableFileNo;
 	
-	public FileManager(DistributedBackupSystem dbs) {
+	public FileManager() {
 		files = new CopyOnWriteArrayList<BackupFile>();
 		backedUpChunks = new CopyOnWriteArrayList<BackupChunk>();
-		this.dbs = dbs;
 		
 		readLog();
 	}
@@ -178,7 +176,7 @@ public class FileManager {
 				while((bytesRead = reader.read(buffer,0,BackupChunk.maxSize)) != -1) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, Arrays.copyOfRange(buffer, 0, bytesRead), filename, bytesRead, replicationDegree, 1, null);
 					chunkCount++;
-					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 					prevBytesRead = bytesRead;
 				}
 				reader.close();
@@ -186,7 +184,7 @@ public class FileManager {
 				if(prevBytesRead == BackupChunk.maxSize) {
 					BackupChunk newChunk = new BackupChunk(fileHash, chunkCount, null, filename, 0, replicationDegree, 1, null);
 					chunkCount++;
-					dbs.getTManager().executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
+                    DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.BACKUPCHUNK, newChunk).get();
 				}
 				
 				newFile = new BackupFile(fileHash, filename, replicationDegree, chunkCount);
@@ -234,6 +232,7 @@ public class FileManager {
 				out.close();
 				c.eraseData();
 				c.setCurrRepDeg(1);
+                c.addToStored(InetAddress.getLocalHost());
 				this.backedUpChunks.add(c);
 				this.currSize += c.getSize();
 				this.nextAvailableFileNo++;
@@ -432,11 +431,18 @@ public class FileManager {
 	}
 	
 	public void releaseSpace() {
-		while(currSize > maxSize) {
+        boolean canReleaseMore = false;
+
+        for(BackupChunk chunk : backedUpChunks) {
+            if(chunk.getRepDeg() > chunk.getWantedReplicationDegree())
+                canReleaseMore = true;
+        }
+
+		while(currSize > maxSize || canReleaseMore) {
 			BackupChunk maxRepDeg = null;
 			
 			for(BackupChunk chunk : backedUpChunks) {
-				if(maxRepDeg == null || chunk.getRepDeg() > maxRepDeg.getRepDeg())
+				if(maxRepDeg == null || chunk.getRepDeg() > chunk.getWantedReplicationDegree() || (chunk.getRepDeg() > maxRepDeg.getRepDeg() && !(chunk.getRepDeg() > chunk.getWantedReplicationDegree())))
 					maxRepDeg = chunk;
 			}
 			
@@ -447,6 +453,13 @@ public class FileManager {
 					e.printStackTrace();
 				}
 			}
+
+            canReleaseMore = false;
+            for(BackupChunk chunk : backedUpChunks) {
+                if(chunk.getRepDeg() > chunk.getWantedReplicationDegree()) {
+                    canReleaseMore = true;
+                }
+            }
 		}
 	}
 	

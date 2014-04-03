@@ -7,8 +7,8 @@ public class SetAllocatedMemoryTask extends Task {
 
 	private long newMemory;
 	
-	public SetAllocatedMemoryTask(FileManager fManager, long repDeg) {
-		super(fManager);
+	public SetAllocatedMemoryTask(long repDeg) {
+		super();
 		this.newMemory = repDeg;
 	}
 	

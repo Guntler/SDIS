@@ -12,8 +12,8 @@ import pt.up.fe.backup.FileManager.returnTypes;
 public class StoreChunkTask extends Task {
 	private BackupChunk chunk;
 
-	public StoreChunkTask(FileManager fManager, BackupChunk chunk) {
-		super(fManager);
+	public StoreChunkTask(BackupChunk chunk) {
+		super();
 		this.chunk = chunk;
 	}
 

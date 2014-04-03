@@ -11,8 +11,8 @@ import pt.up.fe.backup.Packet;
 public class BackUpChunkTask extends Task {
 	BackupChunk chunk;
 	
-	public BackUpChunkTask(FileManager fManager, BackupChunk chunk) {
-		super(fManager);
+	public BackUpChunkTask(BackupChunk chunk) {
+		super();
 		this.chunk = chunk;
 	}
 	

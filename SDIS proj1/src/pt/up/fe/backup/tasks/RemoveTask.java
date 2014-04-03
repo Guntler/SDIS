@@ -10,8 +10,8 @@ import pt.up.fe.backup.FileManager;
  *
  */
 public class RemoveTask extends Task {
-	public RemoveTask(FileManager fManager) {
-		super(fManager);
+	public RemoveTask() {
+		super();
 	}
 
 	@Override

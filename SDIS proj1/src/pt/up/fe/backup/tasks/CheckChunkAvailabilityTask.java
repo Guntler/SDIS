@@ -11,8 +11,8 @@ import pt.up.fe.backup.Packet;
 
 public class CheckChunkAvailabilityTask extends Task {
 
-	public CheckChunkAvailabilityTask(FileManager fManager) {
-		super(fManager);
+	public CheckChunkAvailabilityTask() {
+		super();
 		
 	}
 

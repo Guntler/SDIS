@@ -11,8 +11,8 @@ import pt.up.fe.backup.TaskManager;
 public class RestoreFileTask extends Task{
 	String filename;
 	
-	public RestoreFileTask(FileManager fManager, String filename) {
-		super(fManager);
+	public RestoreFileTask(String filename) {
+		super();
 		this.filename = filename;
 	}
 
@@ -27,7 +27,7 @@ public class RestoreFileTask extends Task{
 			for(curChunk=0;curChunk<file.getNumChunks();curChunk++) {
 				try {
 					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.RESTORECHUNK, file.getFileID(), curChunk).get();
-				} catch (InterruptedException | ExecutionException e) {e.printStackTrace();}
+				} catch (Exception e) {e.printStackTrace();}
 				/*curChunk++;
 				
 				for(Packet p : messages) {

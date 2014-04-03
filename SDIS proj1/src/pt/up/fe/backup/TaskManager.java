@@ -17,23 +17,21 @@ import pt.up.fe.backup.tasks.StoreChunkTask;
 
 public class TaskManager {
 	public enum TaskTypes {BACKUPFILE, BACKUPCHUNK, STORECHUNK, SENDCHUNK, HANDLE_REMOVE, HANDLE_STORE, DELETEFILE, DELETE, HANDLE_DELETE, REMOVE, RESTORECHUNK, RESTOREFILE, SETMEMORY,CHECKCHUNK};
+
+	private TaskExecutor executor = null;
 	
-	private DistributedBackupSystem dbs;
-	TaskExecutor executor = null;
-	
-	public TaskManager(DistributedBackupSystem dbs) {
+	public TaskManager() {
 		executor = new TaskExecutor(10);
-		this.dbs = dbs;
 	}
 	
 	synchronized public Future<?> executeTask(TaskTypes type, BackupChunk chunk) {
 		switch(type) {
 		case BACKUPCHUNK:
-			return executor.submit(new BackUpChunkTask(dbs.getFManager(), chunk));
+			return executor.submit(new BackUpChunkTask(chunk));
 		case STORECHUNK:
-			return executor.submit(new StoreChunkTask(dbs.getFManager(), chunk));
+			return executor.submit(new StoreChunkTask(chunk));
 		case REMOVE:
-			return executor.submit(new RemoveTask(dbs.getFManager()));
+			return executor.submit(new RemoveTask());
 		default:
 			return null;
 		}
@@ -42,11 +40,11 @@ public class TaskManager {
 	synchronized public Future<?> executeTask(TaskTypes type, byte[] fileID, int chunkNo) {
 		switch(type) {
 		case DELETE:
-			return executor.submit(new DeleteTask(dbs.getFManager(), fileID));
+			return executor.submit(new DeleteTask(fileID));
 		case RESTORECHUNK:
-			return executor.submit(new RestoreChunkTask(dbs.getFManager(), fileID, chunkNo));
+			return executor.submit(new RestoreChunkTask(fileID, chunkNo));
 		case REMOVE:
-			return executor.submit(new RemoveTask(dbs.getFManager()));
+			return executor.submit(new RemoveTask());
 		default:
 			return null;
 		}
@@ -55,24 +53,24 @@ public class TaskManager {
 	synchronized public Future<?> executeTask(Packet packet) {
 		if(packet.packetType.equals("PUTCHUNK")) {
 			executor.messageActiveTasks(packet);
-			return executor.submit(new StoreChunkTask(dbs.getFManager(), packet.getChunk()));
+			return executor.submit(new StoreChunkTask(packet.getChunk()));
 		}
 		else if (packet.packetType.equals("GETCHUNK")) {
-			return executor.submit(new SendChunkTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo()));
+			return executor.submit(new SendChunkTask(packet.getFileID(), packet.getChunkNo()));
 		}
 		else if (packet.packetType.equals("DELETE")) {
-			return executor.submit(new HandleDeleteTask(dbs.getFManager(), packet.getFileID()));
+			return executor.submit(new HandleDeleteTask(packet.getFileID()));
 		}
 		else if (packet.packetType.equals("REMOVED")) {
-			return executor.submit(new HandleRemoveTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
+			return executor.submit(new HandleRemoveTask(packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		else if (packet.packetType.equals("STORED")) {
 			executor.messageActiveTasks(packet);
-			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
+			return executor.submit(new HandleStoreTask(packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		else if (packet.packetType.equals("CHECKCHUNK")) {
 			executor.messageActiveTasks(packet);
-			return executor.submit(new HandleStoreTask(dbs.getFManager(), packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
+			return executor.submit(new HandleStoreTask(packet.getFileID(), packet.getChunkNo(), packet.getSenderAddress()));
 		}
 		else if (packet.packetType.equals("CHUNK")) {
 			executor.messageActiveTasks(packet);
@@ -90,16 +88,16 @@ public class TaskManager {
 
 	synchronized public Future<?> executeTask(TaskTypes type, String name, long repDeg) {
 		if(type == TaskTypes.BACKUPFILE) {
-			return executor.submit(new BackupFileTask(null, name, (int)repDeg));
+			return executor.submit(new BackupFileTask(name, (int)repDeg));
 		}
 		else if(type == TaskTypes.RESTOREFILE) {
-			return executor.submit(new RestoreFileTask(null, name));
+			return executor.submit(new RestoreFileTask(name));
 		}
 		else if(type == TaskTypes.DELETEFILE) {
-			return executor.submit(new DeleteFileTask(null, name));
+			return executor.submit(new DeleteFileTask(name));
 		}
 		else if(type == TaskTypes.SETMEMORY) {
-			return executor.submit(new SetAllocatedMemoryTask(null, repDeg));
+			return executor.submit(new SetAllocatedMemoryTask(repDeg));
 		}
 		else return null;
 			

@@ -10,8 +10,8 @@ public class BackupFileTask extends Task{
 	private String filename;
 	private int replicationDegree;
 	
-	public BackupFileTask(FileManager fManager, String filename, int replicationDegree) {
-		super(fManager);
+	public BackupFileTask( String filename, int replicationDegree) {
+		super();
 		this.filename = filename;
 		this.replicationDegree = replicationDegree;
 	}
@@ -22,8 +22,13 @@ public class BackupFileTask extends Task{
 		BackupFile file = DistributedBackupSystem.fManager.getFileByName(filename);
 		if(file != null) {
 			for(Packet p : messages) {
-				if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID())))
-					DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0);
+				if(p.getPacketType().equals("DELETE") && Packet.bytesToHex(p.getFileID()).equals(Packet.bytesToHex(file.getFileID()))) {
+                    try {
+                        DistributedBackupSystem.tManager.executeTask(TaskManager.TaskTypes.DELETE, file.getFileID(), 0).get();
+                        DistributedBackupSystem.fManager.getFiles().remove(DistributedBackupSystem.fManager.getFileByName(filename));
+                        DistributedBackupSystem.fManager.updateLog();
+                    } catch (Exception e) {e.printStackTrace();};
+                }
 			}
 		}
 	}
